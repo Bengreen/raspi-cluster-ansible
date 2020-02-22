@@ -1,0 +1,31 @@
+---
+- name: Ensure NFS utilities are installed.
+  apt: 
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:  
+    packages:
+      - nfs-kernel-server
+
+- name: Create exports file
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload nfs
+
+- name: Restart the exports file.
+  command: 'exportfs -ra'
+
+- name: restart nfs server
+  service: 
+    name: nfs-kernel-server
+    state: restarted
+
+- name: Ensure nfs server is running
+  service: 
+    name: nfs-kernel-server
+    state: started

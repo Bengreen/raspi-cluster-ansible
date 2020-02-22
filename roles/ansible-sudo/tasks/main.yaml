@@ -1,0 +1,19 @@
+---
+- name: Ansible user
+  user:
+    name: ansible
+    comment: Ansible user
+    groups: sudo
+
+- name: Ansible authorized key
+  authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', '/home/ben.greene/.ssh/id_rsa.pub') }}"
+- name: Add ansible to passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    line: 'ansible ALL=(ALL) NOPASSWD:ALL'
+    insertafter: EOF
+    state: present
+    validate: 'visudo -cf %s'

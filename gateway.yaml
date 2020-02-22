@@ -1,0 +1,10 @@
+---
+- hosts: gateway
+  vars:
+    ansible_user: ansible
+    ansible_become: yes
+    nfs_exports:
+      - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
+      - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
+  roles:
+    - nfs-server
