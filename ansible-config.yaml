@@ -1,4 +1,7 @@
 ---
-- hosts: gateway
+- hosts:
+    - gateway
+    - k8sclient
   roles:
     - ansible-sudo
+    - hostname

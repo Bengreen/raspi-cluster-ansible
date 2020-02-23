@@ -12,3 +12,4 @@
     - nfs-server
     - vlan
     - dnsmasq
+    - router

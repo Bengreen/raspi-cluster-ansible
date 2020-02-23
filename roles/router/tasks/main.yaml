@@ -1,0 +1,34 @@
+---
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Masquerade to eth0
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    jump: MASQUERADE
+
+- name: Forward releated
+  iptables:
+    chain: FORWARD
+    in_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    out_interface: eth0
+    match: state
+    ctstate:
+      - RELATED
+      - ESTABLISHED
+    jump: ACCEPT
+    
+- name: Forward all
+  iptables:
+    chain: FORWARD
+    in_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    out_interface: eth0
+    jump: ACCEPT
+
