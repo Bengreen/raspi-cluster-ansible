@@ -1,3 +1,5 @@
 ---
 - name: reload nfs
-  command: 'exportfs -ra'
+  service:
+    name: nfs-kernel-server
+    state: restarted

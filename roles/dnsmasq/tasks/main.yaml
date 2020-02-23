@@ -1,0 +1,30 @@
+---
+- name: Install dnsmasq
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - dnsmasq
+
+- name: tftpboot dir
+  file:
+    path: /tftpboot
+    state: directory
+    mode: '0755'
+  notify: populate tftpboot
+
+- name: dnsmasq file
+  template:
+    src: dnsmasq.j2
+    dest: "/etc/dnsmasq.d/{{ vlan_interface }}.{{ vlan_tag }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload dnsmasq
+
+- name: Ensure dnsmasq is running
+  service:
+    name: dnsmasq
+    state: started

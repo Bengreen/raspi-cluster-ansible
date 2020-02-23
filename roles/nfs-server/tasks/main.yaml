@@ -17,14 +17,6 @@
     mode: 0644
   notify: reload nfs
 
-- name: Restart the exports file.
-  command: 'exportfs -ra'
-
-- name: restart nfs server
-  service: 
-    name: nfs-kernel-server
-    state: restarted
-
 - name: Ensure nfs server is running
   service: 
     name: nfs-kernel-server

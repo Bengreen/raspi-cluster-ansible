@@ -1,0 +1,8 @@
+---
+- name: Network file
+  template:
+    src: vlan.j2
+    dest: "/etc/network/interfaces.d/{{ vlan_interface }}.{{ vlan_tag }}"
+    owner: root
+    group: root
+    mode: 0644

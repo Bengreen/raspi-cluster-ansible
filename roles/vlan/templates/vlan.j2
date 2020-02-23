@@ -1,0 +1,3 @@
+auto {{ vlan_interface }}.{{ vlan_tag }}
+iface {{ vlan_interface }}.{{ vlan_tag }} inet manual
+  vlan-raw-device {{ vlan_interface }}
