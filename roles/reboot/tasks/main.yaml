@@ -1,0 +1,5 @@
+---
+- name: Trigger reboot on handler
+  command: /bin/true
+  notify: reboot-node
+

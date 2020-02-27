@@ -1,0 +1,6 @@
+---
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+    force_apt_get: True

@@ -1,0 +1,4 @@
+---
+- name: reboot-node
+  reboot:
+    reboot_timeout: 3600

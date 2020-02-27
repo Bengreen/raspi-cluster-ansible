@@ -1,0 +1,8 @@
+---
+- hosts: k8sclient
+  vars:
+    ansible_user: ansible
+    ansible_become: yes
+  roles:
+    - hostname
+

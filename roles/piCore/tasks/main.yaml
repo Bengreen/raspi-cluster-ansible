@@ -1,0 +1,68 @@
+---
+- name: myfiles directory
+  file:
+    path: /myfiles
+    state: directory
+    mode: '0755'
+
+- name: Set piCore piCore
+  set_fact:
+    piCoreVersion: 9.0.3
+
+- name: Download and Unarchive piCore
+  # vars:
+  #   piCoreVersion: 9.0.3
+  unarchive:
+    src: "http://tinycorelinux.net/9.x/armv6/releases/RPi/piCore-{{ piCoreVersion }}.zip"
+    dest: /myfiles
+    remote_src: yes
+    creates: "/myfiles/piCore-{{ piCoreVersion }}.img"
+
+- name: losetup
+  # vars:
+  #   piCoreVersion: 9.0.3
+  command:
+    cmd: "losetup -P /dev/loop0 /myfiles/piCore-{{ piCoreVersion }}.img"
+    creates: /dev/loop0p1
+
+- name: myfiles directory partition 1
+  file:
+    path: /myfiles/piCore1
+    state: directory
+    mode: '0755'
+
+- name: Mount partition 1
+  mount:
+    path: /myfiles/piCore1
+    src: /dev/loop0p1
+    fstype: vfat
+    state: mounted
+
+- name: piCore1 files dir
+  file:
+    path: /myfiles/piCore1files
+    state: directory
+    mode: '0755'
+
+- name: Synchronize two directories on one remote host.
+  synchronize:
+    src: /myfiles/piCore1/
+    dest: /myfiles/piCore1files
+  delegate_to: "{{ inventory_hostname }}"
+
+
+  # - name: Copy piCore files
+  # copy:
+  #   src: /myfiles/piCore1/
+  #   remote_src: yes
+  #   dest: /myfiles/piCore1files
+
+- name: unmount parition 1
+  mount:
+    path: /myfiles/piCore1
+    state: unmounted
+
+- name: delete losetup
+  command: losetup -d /dev/loop0
+  
+  

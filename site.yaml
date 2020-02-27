@@ -1,4 +1,4 @@
 ---
 
 - import_playbook: gateway.yaml
-- import_playbook: k8sclients.yaml
+- import_playbook: k8sclient.yaml

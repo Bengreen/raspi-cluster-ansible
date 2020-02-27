@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - gateway
     - k8sclient
+    - gateway
   roles:
-    - ansible-sudo
+    - yum-upgrade

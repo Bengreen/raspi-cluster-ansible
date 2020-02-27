@@ -13,3 +13,5 @@
     - vlan
     - dnsmasq
     - router
+    - hostname
+    - piCore
