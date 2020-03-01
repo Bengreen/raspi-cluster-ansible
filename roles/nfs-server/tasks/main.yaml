@@ -17,6 +17,12 @@
     mode: 0644
   notify: reload nfs
 
+- name: myfiles directory
+  file:
+    path: /nfs/client1
+    state: directory
+    mode: '0755'
+
 - name: Ensure nfs server is running
   service: 
     name: nfs-kernel-server

@@ -1,3 +1,4 @@
 auto {{ vlan_interface }}.{{ vlan_tag }}
-iface {{ vlan_interface }}.{{ vlan_tag }} inet manual
+iface {{ vlan_interface }}.{{ vlan_tag }} inet static
+  address 192.168.2.1/24
   vlan-raw-device {{ vlan_interface }}
