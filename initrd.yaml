@@ -9,9 +9,9 @@
       - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
   roles:
-    - nfs-server
-    - vlan
-    - dnsmasq
-    - router
+    # - nfs-server
+    # - vlan
+    # - dnsmasq
+    # - router
     - initrd
     # - piCore

@@ -1,0 +1,42 @@
+---
+- name: Set targetDir
+  set_fact:
+    targetDir: /initrd
+
+- name: install initrd build packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    # update_cache: yes
+  vars:
+    packages:
+    - cpio
+    - fakeroot
+
+- name: initrd files dir
+  file:
+    path: "{{ targetDir }}"
+    state: directory
+    mode: '0755'
+
+# - name: Run initrd build script
+#   shell: |
+#       mkdir sbin
+      
+#       pwd
+#       touch /tmp/monkey
+#   args:
+#     chdir: "{{ targetDir }}"
+#     executable: /bin/bash
+
+- name: fakeroot cpio build
+  command: /usr/bin/fakeroot
+  args:
+    creates: "{{ targetDir }}/initramfs.igz"
+    chdir: "{{ targetDir }}"
+    stdin: |
+        mkdir -p dev
+        mknod dev/console c 5 1
+        find . | cpio -H newc -o | gzip > initramfs.igz
+        exit
+  

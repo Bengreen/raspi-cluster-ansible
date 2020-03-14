@@ -66,7 +66,7 @@
 - name: unmount parition 1
   mount:
     path: /myfiles/piCore1
-    state: unmounted
+    state: absent
 
 - name: delete losetup
   command: losetup -d /dev/loop0
