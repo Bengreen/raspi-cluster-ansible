@@ -56,8 +56,13 @@
     chdir: "{{ targetDir }}"
     stdin: |
         pushd initrd
-        mkdir -p dev bin
+        mkdir -p bin sbin etc proc sys usr/bin usr/sbin
         cp /bin/busybox bin/
+        for name in sh echo mount ip reboot fdisk history cp rm ln ping df ifup ifdown vi ps
+        do
+          ln -s /bin/busybox bin/$name
+        done
+
         mknod dev/console c 5 1
         mknod dev/ram0 b 1 0
         mknod dev/null c 1 3

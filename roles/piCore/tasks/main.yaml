@@ -7,12 +7,12 @@
 
 - name: Set piCore piCore
   set_fact:
-    piCoreVersion: 9.0.3
+    piCoreVersion: 11.0beta1a
     targetDir: /tftpboot
 
 - name: Download and Unarchive piCore
   unarchive:
-    src: "http://tinycorelinux.net/9.x/armv6/releases/RPi/piCore-{{ piCoreVersion }}.zip"
+    src: "http://tinycorelinux.net/11.x/armv7l/test_releases/RPi/piCore-{{ piCoreVersion }}.zip"
     dest: /myfiles
     remote_src: yes
     creates: "/myfiles/piCore-{{ piCoreVersion }}.img"
