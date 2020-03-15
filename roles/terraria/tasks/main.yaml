@@ -1,0 +1,23 @@
+- name: Install required packages
+  apt: 
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:  
+    packages:
+      - mono-complete
+
+
+- name: terraria directory
+  file:
+    path: /terraria
+    state: directory
+    mode: '0755'
+    
+
+- name: Download and Unarchive TShock
+  unarchive:
+    src: https://github.com/Pryaxis/TShock/releases/download/v4.3.26/tshock_4.3.26.zip
+    dest: /terraria/
+    remote_src: yes
+    # creates: "/myfiles/piCore-{{ piCoreVersion }}.img"
