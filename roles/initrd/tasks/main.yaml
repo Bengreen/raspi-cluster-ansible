@@ -12,12 +12,18 @@
     packages:
     - cpio
     - fakeroot
+    - busybox-static
 
 - name: initrd files dir
   file:
     path: "{{ targetDir }}"
     state: directory
     mode: '0755'
+
+# - name: Copy busybox
+#   copy:
+#     src: /usr/bin/busybox
+#     dst: "{{ targetDir }}/bin"
 
 # - name: Run initrd build script
 #   shell: |
@@ -29,14 +35,55 @@
 #     chdir: "{{ targetDir }}"
 #     executable: /bin/bash
 
+- name: Initrd initial filesystem
+  file:
+    path: "{{ targetDir }}/initrd"
+    state: directory
+    mode: '0755'
+
+- name: init
+  template:
+    src: init.j2
+    dest: "{{ targetDir }}/initrd/init"
+    owner: root
+    group: root
+    mode: 0755
+
 - name: fakeroot cpio build
   command: /usr/bin/fakeroot
   args:
     creates: "{{ targetDir }}/initramfs.igz"
     chdir: "{{ targetDir }}"
     stdin: |
-        mkdir -p dev
+        pushd initrd
+        mkdir -p dev bin
+        cp /bin/busybox bin/
         mknod dev/console c 5 1
-        find . | cpio -H newc -o | gzip > initramfs.igz
+        mknod dev/ram0 b 1 0
+        mknod dev/null c 1 3
+        mknod dev/tty c 5 0
+
+        find . | cpio -H newc -o | gzip > ../initramfs.igz
         exit
-  
+
+- name: copy ramdisk to tftpboot
+  copy:
+    src: "{{ targetDir }}/initramfs.igz"
+    dest: /tftpboot/initramfs.igz
+    remote_src: yes
+
+- name: config.txt
+  template:
+    src: config.j2
+    dest: /tftpboot/config.txt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: cmdline_net
+  template:
+    src: cmdline_net.j2
+    dest: /tftpboot/cmdline_net.txt
+    owner: root
+    group: root
+    mode: 0644
