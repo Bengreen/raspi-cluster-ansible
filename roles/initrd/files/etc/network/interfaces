@@ -3,7 +3,7 @@
 # Or create your own drop-ins in: /etc/network/interfaces.d/
 
 # Drop-in configs
-source interfaces.d/*
+# source interfaces.d/*
 
 # Loopback
 auto lo

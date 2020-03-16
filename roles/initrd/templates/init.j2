@@ -1,8 +1,22 @@
 #!/bin/busybox sh
 
+/bin/busybox --install -s
+
 mount -t proc none /proc
 mount -t sysfs none /sys
 
+echo 0 > /proc/sys/kernel/printk
+
+mknod /dev/null c 1 3
+mknod /dev/tty c 5 0
+mdev -s
+
 echo "This script just mounts and boots the rootfs, nothing else!"
 
+ifup lo
+ifup eth0
+
+ip addr
+
 /bin/busybox sh
+

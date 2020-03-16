@@ -1,6 +1,0 @@
----
-- hosts:
-    - gateway
-    - k8sclient
-  roles:
-    - ansible-sudo

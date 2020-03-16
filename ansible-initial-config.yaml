@@ -1,6 +1,7 @@
 ---
 - hosts:
     - gateway
-    - k8sclient
+    # - k8sclient
+    - samspi
   roles:
     - ansible-sudo
