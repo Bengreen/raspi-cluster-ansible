@@ -1,0 +1,6 @@
+#!/bin/sh
+
+tftp -gr {{ imageName }} 192.168.2.1
+
+p7zip -d {{ imageName }} 
+# p7zip -d {{ imageName }} -c | dd of=/dev/sdb bs=1M

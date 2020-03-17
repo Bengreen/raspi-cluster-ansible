@@ -13,10 +13,17 @@ mdev -s
 
 echo "This script just mounts and boots the rootfs, nothing else!"
 
+hostname imager
+
 ifup lo
 ifup eth0
 
 ip addr
+
+# udhcpc -s /etc/network/udhcpc.sh eth0
+
+# ip addr
+
 
 /bin/busybox sh
 

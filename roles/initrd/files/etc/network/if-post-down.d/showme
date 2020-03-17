@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "if-post-down trying: $*"
+env > /if-post-down.env

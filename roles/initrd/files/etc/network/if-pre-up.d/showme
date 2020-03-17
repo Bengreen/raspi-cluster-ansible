@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "if-pre-up trying: $*"
+env > /if-pre-up.env

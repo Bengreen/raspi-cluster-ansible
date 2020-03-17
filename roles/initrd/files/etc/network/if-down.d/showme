@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "if-down trying: $*"
+env > /if-down.env
