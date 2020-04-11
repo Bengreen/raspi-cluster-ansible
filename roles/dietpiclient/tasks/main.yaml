@@ -1,0 +1,18 @@
+
+
+
+- name: config.txt sd
+  template:
+    src: config.j2
+    dest: /tftpboot/config.txt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: cmdline_sd
+  template:
+    src: cmdline_sd.j2
+    dest: /tftpboot/cmdline_sd.txt
+    owner: root
+    group: root
+    mode: 0644
