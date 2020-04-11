@@ -7,3 +7,6 @@ Then follow this command where samspi is the hostname (found in hosts file)
     ansible-playbook ansible-initial-config.yaml -l samspi -kKb
 
 
+RUn the playbook for gateway
+
+    ansible-playbook gateway.yaml

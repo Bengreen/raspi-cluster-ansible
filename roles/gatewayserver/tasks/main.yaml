@@ -1,0 +1,27 @@
+- name: Set Config
+  set_fact:
+    targetDir: /gateway
+
+- name: Python venv tools
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - python3-pip
+    - python-setuptools # Needed for ansible to switch to python3
+    - virtualenv
+
+- name: install server application
+  copy:
+    src: http
+    dest: "{{ targetDir }}"
+
+- name: Install app requirements
+  pip:
+    requirements: "{{ targetDir }}/http/requirements.txt"
+    virtualenv: "{{ targetDir }}/venv"
+    virtualenv_python: python3.7
+    # virtualenv_command: python3 -m venv
+

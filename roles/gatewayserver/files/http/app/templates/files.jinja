@@ -1,0 +1,14 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+  <p>{{ intro }}</p>
+  <p>
+    Images available for download.
+  </p>
+  <b>
+
+    {% for file in files %}
+        <p><a href="{{ file }}">{{ file }}</a></p>
+    {% endfor %}
+  </b>
+{% endblock %}

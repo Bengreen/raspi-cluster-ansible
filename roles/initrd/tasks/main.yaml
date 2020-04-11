@@ -52,7 +52,7 @@
     mode: 0755
 
 
-- name: downloader
+- name: downloader script
   template:
     src: download.j2
     dest: "{{ targetDir }}/rootfs/download.sh"
@@ -78,11 +78,11 @@
 - name: fakeroot cpio build
   command: /usr/bin/fakeroot
   args:
-    creates: "{{ targetDir }}/initramfs.igz"
+    # creates: "{{ targetDir }}/initramfs.igz"
     chdir: "{{ targetDir }}"
     stdin: |
         pushd rootfs
-        mkdir -p dev bin sbin etc proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
+        mkdir -p dev bin sbin etc tmp proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
         cp /bin/busybox bin/
    
         chmod +x etc/network/if-down.d/* etc/network/if-up.d/* etc/network/if-pre-up.d/* etc/network/if-post-down.d/* 

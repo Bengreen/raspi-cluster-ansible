@@ -18,12 +18,14 @@ hostname imager
 ifup lo
 ifup eth0
 
+echo IP
 ip addr
 
-# udhcpc -s /etc/network/udhcpc.sh eth0
-
-# ip addr
+echo FDISK
 fdisk -l
+
+echo MOUNT
+mount
 
 /bin/busybox sh
 

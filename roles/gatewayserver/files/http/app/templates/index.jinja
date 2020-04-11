@@ -1,0 +1,11 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+  <p>{{ intro }}</p>
+  <p>
+    To demonstrate a little of the functionality of aiohttp this app implements a very simple message board.
+  </p>
+  <b>
+    <a href="{{ url('Images') }}">View and add messages</a>
+  </b>
+{% endblock %}
