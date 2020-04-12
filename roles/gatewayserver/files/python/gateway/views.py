@@ -8,7 +8,7 @@ from aiohttp import web, streamer
 import os
 import aiohttp_jinja2
 
-@template('index.jinja')
+@template('index.j2')
 async def index(request):
     """
     This is the view handler for the "/" url.
@@ -61,29 +61,39 @@ class Images(web.View):
                 for  filename in filenames:
                     filesOut.append(os.path.join(dirpath, filename))
             context = { "files": filesOut}
-            return aiohttp_jinja2.render_template('files.jinja',
+            return aiohttp_jinja2.render_template('files.j2',
                                               self.request,
                                               context)
 
 class Imaging(web.View):
     async def get(self):
-        if 'file_name' in self.request.match_info:
+        if 'filename' in self.request.match_info:
+            filename = self.request.match_info['filename']
+            print("return info on a single imaging dir : %s" % (filename))
+            return web.json_response({"list": True})
+        else:
             print("reeturn list of imaging dirs")
             return web.json_response({"get": True})
-        else:
-            print("return info on a single imaging dir")
-            return web.json_response({"list": True})
     async def delete(self):
-        print("remove the imaging dir")
-        return web.json_response({"delete": True})
+        if 'filename' not in self.request.match_info:
+            print("filename must be provided")
+            return web.json_response({"delete": False})
+        else:
+            filename = self.request.match_info['filename']
+            print("remove the imaging dir : %s" % (filename))
+            return web.json_response({"delete": True})
     async def post(self):
-        print("set the imaging dir")
-        return web.json_response({"post": True})
+        if 'filename' in self.request.match_info:
+            print("canot POST to an imaging record")
+            return web.json_response({"post": False})
+        else
+            print("set the imaging dir")
+            return web.json_response({"post": True})
 
 
 class InstallConfig(web.View):
     async def get(self):
-        name = request.match_info['name']  # Could be a HUGE file
+        name = self.request.match_info['name']
         context = {
             "password": "archive1",
         }

@@ -4,9 +4,7 @@ import aiohttp_jinja2
 import aiohttp_session
 import jinja2
 from aiohttp import web
-# from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
-# from .db import prepare_database
 from .settings import Settings
 from .views import index, Alive, Images, InstallConfig, Imaging
 
@@ -34,9 +32,6 @@ def create_app():
     app.on_startup.append(startup)
     app.on_cleanup.append(cleanup)
 
-    # aiohttp_session.setup(app, EncryptedCookieStorage(settings.auth_key, cookie_name=settings.cookie_name))
-
-    # import pdb; pdb.set_trace()
     app.router.add_static('/static', str(THIS_DIR / 'static'))
 
     app.router.add_get('/', index, name='index')
