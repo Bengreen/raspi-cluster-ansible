@@ -65,29 +65,35 @@ class Images(web.View):
                                               self.request,
                                               context)
 
-
-async def download_file(request):
-    file_name = request.match_info['file_name']  # Could be a HUGE file
-    headers = {
-        "Content-disposition": "attachment; filename={file_name}".format(file_name=file_name)
-    }
-
-    file_path = os.path.join(request.app['imageDir'], file_name)
-
-    if not os.path.exists(file_path):
-        return web.Response(
-            body='File <{file_name}> does not exist'.format(file_name=file_name),
-            status=404
-        )
-
-    return web.Response(
-        body=file_sender(file_path=file_path),
-        headers=headers
-    )
+class Imaging(web.View):
+    async def get(self):
+        if 'file_name' in self.request.match_info:
+            print("reeturn list of imaging dirs")
+            return web.json_response({"get": True})
+        else:
+            print("return info on a single imaging dir")
+            return web.json_response({"list": True})
+    async def delete(self):
+        print("remove the imaging dir")
+        return web.json_response({"delete": True})
+    async def post(self):
+        print("set the imaging dir")
+        return web.json_response({"post": True})
 
 
+class InstallConfig(web.View):
+    async def get(self):
+        name = request.match_info['name']  # Could be a HUGE file
+        context = {
+            "password": "archive1",
+        }
+        return aiohttp_jinja2.render_template('dietpi.txt.j2',
+                                              self.request,
+                                              context)
+        return web.json_response(config)
 
-class MyView(web.View):
+
+class Alive(web.View):
     async def get(self):
         return web.json_response({"alive": True})
 

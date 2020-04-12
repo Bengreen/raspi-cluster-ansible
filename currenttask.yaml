@@ -15,4 +15,5 @@
     # - router
     # - initrd
     # - piCore
-    - dietpiclient
+    # - dietpiclient
+    - gatewayserver

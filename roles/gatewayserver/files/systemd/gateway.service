@@ -1,0 +1,9 @@
+[Unit]
+# Human readable name of the unit
+Description=Gateway Service
+
+[Service]
+# Command to execute when the service is started
+ExecStart=/opt/gateway/venv/bin/python -m gateway
+# Environment="PYTHONPATH=/opt/gateway/
+Environment=PYTHONUNBUFFERED=1

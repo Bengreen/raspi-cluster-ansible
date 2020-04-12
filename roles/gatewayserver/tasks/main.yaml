@@ -1,6 +1,6 @@
 - name: Set Config
   set_fact:
-    targetDir: /gateway
+    targetDir: /opt/gateway
 
 - name: Python venv tools
   apt:
@@ -13,15 +13,22 @@
     - python-setuptools # Needed for ansible to switch to python3
     - virtualenv
 
-- name: install server application
+- name: Copy Gateway files
   copy:
-    src: http
+    src: python
     dest: "{{ targetDir }}"
 
-- name: Install app requirements
+- name: Install Gateway app
   pip:
-    requirements: "{{ targetDir }}/http/requirements.txt"
+    name: "{{ targetDir }}/python"
+    # requirements: "{{ targetDir }}/http/requirements.txt"
     virtualenv: "{{ targetDir }}/venv"
     virtualenv_python: python3.7
     # virtualenv_command: python3 -m venv
+
+- name: Gateway Systemd
+  copy:
+    src: systemd/gateway.service
+    dest: /etc/systemd/system/
+
 

@@ -2,14 +2,13 @@ from pathlib import Path
 
 import aiohttp_jinja2
 import aiohttp_session
-import asyncpg
 import jinja2
 from aiohttp import web
 # from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
 # from .db import prepare_database
 from .settings import Settings
-from .views import index, MyView, download_file, Images
+from .views import index, Alive, Images, InstallConfig, Imaging
 
 THIS_DIR = Path(__file__).parent
 
@@ -38,18 +37,20 @@ def create_app():
     # aiohttp_session.setup(app, EncryptedCookieStorage(settings.auth_key, cookie_name=settings.cookie_name))
 
     # import pdb; pdb.set_trace()
-    app.router.add_static('/static', str(THIS_DIR.parent / 'static'))
+    app.router.add_static('/static', str(THIS_DIR / 'static'))
 
     app.router.add_get('/', index, name='index')
-    app.router.add_view('/xxx', MyView, name='MyView')
-    app.router.add_get('/file/{file_name}', download_file)
+    app.router.add_view('/alive', Alive, name='Alive')
 
     app.router.add_view('/images', Images, name='ImagesIndex')
     app.router.add_view('/images/{file_name}', Images, name='Images')
     
+    app.router.add_view('/config/{name}', InstallConfig, name="Config")
+
+    app.router.add_view('/imaging/', InstallConfig, name="ImagingIndex")
+    app.router.add_view('/imaging/{name}', InstallConfig, name="Imaging")
 
     for resource in app.router.resources():
         print(resource)
-
 
     return app

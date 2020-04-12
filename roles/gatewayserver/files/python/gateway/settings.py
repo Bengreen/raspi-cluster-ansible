@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """
     See https://pydantic-docs.helpmanual.io/#settings for details on using and overriding this
     """
-    name = 'testme'
+    name = 'gatewayserver'
     auth_key = 'RlWPSxCDUDILOevgHp2Z-qu3anE8YKmpszZJUz9lLFs='
     cookie_name = 'testme'
     imageDir = '/images'
