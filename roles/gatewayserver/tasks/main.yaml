@@ -1,6 +1,18 @@
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
+    imageName: DietPi_RPi-ARMv6-Buster.7z
+
+- name: images
+  file:
+    path: "{{ targetDir }}/images"
+    state: directory
+    mode: '0755'
+
+- name: download os image
+  get_url:
+    url: "https://dietpi.com/downloads/images/{{ imageName }}"
+    dest: "{{ targetDir }}/images/{{ imageName }}"
 
 - name: Python venv tools
   apt:

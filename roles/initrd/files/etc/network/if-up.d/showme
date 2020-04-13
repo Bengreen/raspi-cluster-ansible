@@ -1,4 +1,0 @@
-#!/bin/sh
-
-echo "if-up trying: $*"
-env > /if-up.env

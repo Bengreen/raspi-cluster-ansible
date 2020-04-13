@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     name = 'gatewayserver'
     auth_key = 'RlWPSxCDUDILOevgHp2Z-qu3anE8YKmpszZJUz9lLFs='
     cookie_name = 'testme'
-    imageDir = '/images'
+    imageDir = '/opt/gateway/images'
+    defaultImage = 'DietPi_RPi-ARMv6-Buster.7z'
+    tftpDir = '/tftpboot'
     HOST: IPv4Address = "0.0.0.0" 
     PORT: int = "8080"

@@ -34,6 +34,11 @@ async def file_sender(writer, file_path=None):
             await writer.write(chunk)
             chunk = f.read(2 ** 16)
 
+class DefaultImage(web.View):
+    async def get(self):
+        imageName = self.request.app['settings'].defaultImage
+        location = self.request.app.router['Images'].url_for(file_name=imageName)
+        raise web.HTTPFound(location=location)
 
 class Images(web.View):
     async def get(self):
@@ -86,7 +91,7 @@ class Imaging(web.View):
         if 'filename' in self.request.match_info:
             print("canot POST to an imaging record")
             return web.json_response({"post": False})
-        else
+        else:
             print("set the imaging dir")
             return web.json_response({"post": True})
 

@@ -6,7 +6,7 @@ import jinja2
 from aiohttp import web
 
 from .settings import Settings
-from .views import index, Alive, Images, InstallConfig, Imaging
+from .views import index, Alive, Images, InstallConfig, Imaging, DefaultImage
 
 THIS_DIR = Path(__file__).parent
 
@@ -37,6 +37,7 @@ def create_app():
     app.router.add_get('/', index, name='index')
     app.router.add_view('/alive', Alive, name='Alive')
 
+    app.router.add_view('/images/default', DefaultImage, name='ImageDefault')
     app.router.add_view('/images', Images, name='ImagesIndex')
     app.router.add_view('/images/{file_name}', Images, name='Images')
     

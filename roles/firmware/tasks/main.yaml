@@ -1,0 +1,11 @@
+- name: Copy Gateway files
+  copy:
+    src: rpi-eeprom-update
+    dest: /etc/default/rpi-eeprom-update
+  register: eepromChannel
+
+- name: Restart rpi-eeprom-update
+  service:
+    name: rpi-eeprom-update
+    state: restarted
+  when: eepromChannel.changed

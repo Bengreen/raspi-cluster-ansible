@@ -13,7 +13,8 @@
     # - vlan
     # - dnsmasq
     # - router
-    # - initrd
+    - initrd
     # - piCore
     # - dietpiclient
-    - gatewayserver
+    # - gatewayserver
+    # - firmware
