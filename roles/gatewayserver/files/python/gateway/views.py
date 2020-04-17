@@ -104,13 +104,14 @@ class Imaging(web.View):
             print("cannot POST to an imaging record")
             return web.json_response({"post": False})
         
-        serialNumber = self.request.json()["serialNumber"]
+        serialNumber = (await self.request.json())["serialNumber"]
         filename = os.path.join(self.request.app["settings"].tftpDir, serialNumber)
         if os.path.exists(filename):
             print("serialNumber %s already exists" % (serialNumber))
             return web.json_response({"post": False})
 
         os.symlink(os.path.join(self.request.app["settings"].tftpDir,"imager"), filename)
+        print("Created Imaging for: %s" % (serialNumber))
         return web.json_response({"post": True})
 
 

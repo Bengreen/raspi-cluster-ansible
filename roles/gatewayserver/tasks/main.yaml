@@ -48,18 +48,26 @@
   copy:
     src: python
     dest: "{{ targetDir }}"
+  register: serviceApplication
 
 - name: Install Gateway app
   pip:
     name: "{{ targetDir }}/python"
-    # requirements: "{{ targetDir }}/http/requirements.txt"
     virtualenv: "{{ targetDir }}/venv"
     virtualenv_python: python3.7
-    # virtualenv_command: python3 -m venv
 
 - name: Gateway Systemd
   copy:
     src: systemd/gateway.service
     dest: /etc/systemd/system/
 
+- name: Make sure gateway service is running
+  systemd:
+    name: gateway
+    state: started
 
+- name: Restart service on changes
+  systemd:
+    name: gateway
+    state: restarted
+  when: serviceApplication.changed
