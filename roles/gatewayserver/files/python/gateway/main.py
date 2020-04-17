@@ -44,7 +44,8 @@ def create_app():
     app.router.add_view('/config/{name}', InstallConfig, name="Config")
 
     app.router.add_view('/imaging/', Imaging, name="ImagingIndex")
-    app.router.add_view('/imaging/{filename}', Imaging, name="Imaging")
+
+    app.router.add_view('/imaging/{serialNumber:[0-9a-fA-F]{8}}', Imaging, name="Imaging")
 
     for resource in app.router.resources():
         print(resource)

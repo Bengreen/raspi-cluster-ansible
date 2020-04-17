@@ -48,6 +48,7 @@
     chdir: "{{ targetDir }}"
     stdin: |
         pushd rootfs
+        chmod +x init
         mkdir -p dev bin sbin etc tmp proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
         cp /bin/busybox bin/
    
@@ -101,9 +102,9 @@
     # group: root
     # mode: 0644
 
-- name: cmdline_net.txt
+- name: cmdline_imager.txt
   copy:
-    src: cmdline_net.txt
+    src: cmdline_imager.txt
     dest: "{{ tftpDir }}/imager/"
     # owner: root
     # group: root

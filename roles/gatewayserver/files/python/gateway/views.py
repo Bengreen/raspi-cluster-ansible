@@ -6,6 +6,8 @@ from aiohttp_session import get_session
 from pydantic import BaseModel, ValidationError, constr
 from aiohttp import web, streamer
 import os
+import glob
+from os.path import basename
 import aiohttp_jinja2
 
 @template('index.j2')
@@ -72,21 +74,31 @@ class Images(web.View):
 
 class Imaging(web.View):
     async def get(self):
-        if 'filename' in self.request.match_info:
-            filename = self.request.match_info['filename']
-            print("return info on a single imaging dir : %s" % (filename))
-            return web.json_response({"list": True})
+        if 'serialNumber' in self.request.match_info:
+            serialNumber = self.request.match_info['serialNumber']
+            print("return info on a single imaging dir : %s" % (serialNumber))
+            return web.json_response({"created": serialNumber})
         else:
-            print("reeturn list of imaging dirs")
-            return web.json_response({"get": True})
+            currentImaging = [basename(image) for image in 
+                glob.glob(self.request.app["settings"].tftpDir+
+                '/[A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9]')]
+
+            return web.json_response({"imaging": currentImaging})
     async def delete(self):
-        if 'filename' not in self.request.match_info:
-            print("filename must be provided")
+        if 'serialNumber' not in self.request.match_info:
+            print("serialNumber must be provided")
             return web.json_response({"delete": False})
-        else:
-            filename = self.request.match_info['filename']
-            print("remove the imaging dir : %s" % (filename))
-            return web.json_response({"delete": True})
+        
+        serialNumber = self.request.match_info['serialNumber']
+        filename = os.path.join(self.request.app["settings"].tftpDir, serialNumber)
+        if not os.path.islink(filename):
+            print("serial number %s does not exists" % (serialNumber))
+            return web.json_response({"delete": False})
+
+        print("Deleting: %s" % (serialNumber))
+        os.unlink(filename)
+
+        return web.json_response({"delete": True})
     async def post(self):
         if 'filename' in self.request.match_info:
             print("canot POST to an imaging record")

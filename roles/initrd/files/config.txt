@@ -1,8 +1,8 @@
 [PI4]
 
-initramfs initramfs.igz followkernel
+initramfs imageRamfs.igz followkernel
 kernel kernel7l.img
-cmdline cmdline_net.txt
+cmdline cmdline_imager.txt
 
 [ALL]
 
