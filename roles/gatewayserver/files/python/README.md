@@ -16,3 +16,8 @@ To run your app you'll need to:
 Run the server in prod mode (after installing)
 
     python -m gateway
+
+
+# Useful info
+
+Raspberry PI serial number is found by looking in `/proc/cpuinfo` and PI4 is using last 8 digits for PXE
