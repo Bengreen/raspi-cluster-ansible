@@ -101,11 +101,17 @@ class Imaging(web.View):
         return web.json_response({"delete": True})
     async def post(self):
         if 'filename' in self.request.match_info:
-            print("canot POST to an imaging record")
+            print("cannot POST to an imaging record")
             return web.json_response({"post": False})
-        else:
-            print("set the imaging dir")
-            return web.json_response({"post": True})
+        
+        serialNumber = self.request.json()["serialNumber"]
+        filename = os.path.join(self.request.app["settings"].tftpDir, serialNumber)
+        if os.path.exists(filename):
+            print("serialNumber %s already exists" % (serialNumber))
+            return web.json_response({"post": False})
+
+        os.symlink(os.path.join(self.request.app["settings"].tftpDir,"imager"), filename)
+        return web.json_response({"post": True})
 
 
 class InstallConfig(web.View):

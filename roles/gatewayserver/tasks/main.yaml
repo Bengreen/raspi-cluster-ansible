@@ -1,7 +1,26 @@
+
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
     imageName: DietPi_RPi-ARMv6-Buster.7z
+    tftpDir: /tftpboot
+
+- name: Ensure group "gateway" exists
+  group:
+    name: gateway
+    state: present
+
+- name: add user gateway
+  user:
+    name: gateway
+    shell: /usr/sbin/nologin
+    groups: gateway
+
+- name: Provide gateway with rw access to tftpboot
+  file:
+    path: "{{ tftpDir }}"
+    group: gateway
+    mode: '0775'
 
 - name: images
   file:

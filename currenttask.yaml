@@ -16,5 +16,5 @@
     - initrd
     # - piCore
     # - dietpiclient
-    # - gatewayserver
+    - gatewayserver
     # - firmware

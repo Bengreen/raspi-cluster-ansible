@@ -7,3 +7,7 @@ Description=Gateway Service
 ExecStart=/opt/gateway/venv/bin/python -m gateway
 # Environment="PYTHONPATH=/opt/gateway/
 Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+User=gateway
+# [Install]
+# WantedBy=default.target

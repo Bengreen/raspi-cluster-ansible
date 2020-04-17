@@ -18,6 +18,13 @@ Run the server in prod mode (after installing)
     python -m gateway
 
 
+# wget delete
+
+The version included in busybox does not support `--method`
+
+
+
+
 # Useful info
 
 Raspberry PI serial number is found by looking in `/proc/cpuinfo` and PI4 is using last 8 digits for PXE
