@@ -1,0 +1,5 @@
+- name: Restart Gateway
+  systemd:
+    name: gateway
+    state: restarted
+ 

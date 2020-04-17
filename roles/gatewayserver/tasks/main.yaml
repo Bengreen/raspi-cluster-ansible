@@ -48,7 +48,7 @@
   copy:
     src: python
     dest: "{{ targetDir }}"
-  register: serviceApplication
+  notify: Restart Gateway
 
 - name: Install Gateway app
   pip:
@@ -66,8 +66,3 @@
     name: gateway
     state: started
 
-- name: Restart service on changes
-  systemd:
-    name: gateway
-    state: restarted
-  when: serviceApplication.changed

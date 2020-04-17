@@ -14,6 +14,7 @@
     packages:
     - cpio
     - fakeroot
+    - netcat
     - busybox-static
     - p7zip
 
@@ -27,60 +28,67 @@
   copy:
     src: "{{ item }}"
     dest: "{{ targetDir }}/rootfs/"
+  register: bootFiles
   with_items:
     - init
     - download.sh
     - etc
 
-# - name: init
-#   copy:
-#     src: init
-#     dest: "{{ targetDir }}/rootfs/"
+- name: Fakeroot script
+  template:
+    src: fakeroot.sh.j2
+    dest: "{{ targetDir }}/fakeroot.sh"
+  register: buildScript
 
-# - name: etc
-#   copy:
-#     src: etc
-#     dest: "{{ targetDir }}/rootfs/"
 
 - name: fakeroot cpio build
-  command: /usr/bin/fakeroot
-  args:
+  shell:
+    cmd: /usr/bin/fakeroot < fakeroot.sh
     chdir: "{{ targetDir }}"
-    stdin: |
-        pushd rootfs
-        chmod +x init
-        mkdir -p dev bin sbin etc tmp proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
-        cp /bin/busybox bin/
+  when: buildScript.changed or bootFiles.changed
+
+# - name: fakeroot cpio build
+#   command: /usr/bin/fakeroot < fakeroot.sh
+#   args:
+#     chdir: "{{ targetDir }}"
+#   when: initrdBuild.changed
+    # stdin: |
+    #     pushd rootfs
+    #     chmod +x init download.sh
+    #     mkdir -p dev bin sbin etc tmp proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
+    #     cp /bin/busybox bin/
    
-        chmod +x etc/network/if-down.d/* etc/network/if-up.d/* etc/network/if-pre-up.d/* etc/network/if-post-down.d/* 
-        chmod +x etc/udhcpc/default.script
+    #     chmod +x etc/network/if-down.d/* etc/network/if-up.d/* etc/network/if-pre-up.d/* etc/network/if-post-down.d/* 
+    #     chmod +x etc/udhcpc/default.script
 
-        # Network dependencies
-        cp /sbin/ethtool sbin/
-        cp /usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so usr/lib/arm-linux-gnueabihf/
-        cp /lib/arm-linux-gnueabihf/libm.so.6 usr/lib/arm-linux-gnueabihf/
-        cp /lib/arm-linux-gnueabihf/libc.so.6 usr/lib/arm-linux-gnueabihf/
-        cp /lib/ld-linux-armhf.so.3 lib/
+    #     # Network dependencies
+    #     cp /sbin/ethtool sbin/
+    #     cp /usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so usr/lib/arm-linux-gnueabihf/
+    #     cp /lib/arm-linux-gnueabihf/libm.so.6 usr/lib/arm-linux-gnueabihf/
+    #     cp /lib/arm-linux-gnueabihf/libc.so.6 usr/lib/arm-linux-gnueabihf/
+    #     cp /lib/ld-linux-armhf.so.3 lib/
 
-        cp /sbin/resolvconf sbin/
-        cp /etc/resolvconf/ etc/
+    #     cp /sbin/resolvconf sbin/
+    #     cp /etc/resolvconf/ etc/
 
 
-        cp /usr/bin/p7zip usr/bin/
-        cp /usr/bin/7zr usr/bin/
-        mkdir -p usr/lib/p7zip
-        cp /usr/lib/p7zip/7zr usr/lib/p7zip/
-        cp /lib/arm-linux-gnueabihf/libpthread.so.0 lib/arm-linux-gnueabihf/
-        cp /usr/lib/arm-linux-gnueabihf/libstdc++.so.6 usr/lib/arm-linux-gnueabihf/
-        cp /lib/arm-linux-gnueabihf/libgcc_s.so.1 usr/lib/arm-linux-gnueabihf/
+    #     cp /usr/bin/p7zip usr/bin/
+    #     cp /usr/bin/7zr usr/bin/
+    #     mkdir -p usr/lib/p7zip
+    #     cp /usr/lib/p7zip/7zr usr/lib/p7zip/
+    #     cp /lib/arm-linux-gnueabihf/libpthread.so.0 lib/arm-linux-gnueabihf/
+    #     cp /usr/lib/arm-linux-gnueabihf/libstdc++.so.6 usr/lib/arm-linux-gnueabihf/
+    #     cp /lib/arm-linux-gnueabihf/libgcc_s.so.1 usr/lib/arm-linux-gnueabihf/
         
+    #     cp /bin/nc bin/
 
-        mknod dev/mmcblk0 b 179 0
-        mknod dev/mmcblk0p1 b 179 1
-        mknod dev/mmcblk0p2 b 179 2
+    #     mknod dev/mmcblk0 b 179 0
+    #     mknod dev/mmcblk0p1 b 179 1
+    #     mknod dev/mmcblk0p2 b 179 2
 
-        find . | cpio -H newc -o | gzip > ../{{ imageName }}
-        exit
+    #     find . | cpio -H newc -o | gzip > ../{{ imageName }}
+    #     exit
+
 
 - name: Imager Files
   file:
