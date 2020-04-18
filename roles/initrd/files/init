@@ -27,5 +27,7 @@ fdisk -l
 echo MOUNT
 mount
 
-/bin/busybox sh
 
+/download.sh
+
+/bin/busybox sh

@@ -5,7 +5,17 @@ add ben.greene to sudoers group
 Then follow this command where samspi is the hostname (found in hosts file)
 
     ansible-playbook ansible-initial-config.yaml -l samspi -kKb
+    ansible-playbook ansible-initial-config.yaml -l k8sclient -kKb
 
+after reimaging you will need to clear the old host key and then get a new host key
+
+    ssh-keygen -f "/home/ben.greene/.ssh/known_hosts" -R "192.168.2.191"
+    ssh dietpi@192.168.2.191
+
+Initial ping to nodes (using dietpi to login). Then setup ansible user
+
+    ansible k8sclient -m ping -u dietpi -k
+    ansible-playbook ansible-initial-config.yaml -l k8sclient -kb -u dietpi
 
 
 # Setup roles for Gateway
@@ -32,6 +42,9 @@ The initrd and configs are setup in a special directory inside the tftpboot dir 
 ## Gateway server
 An http server to manage imaging process and other tasks
 
+# Commands to run
+
+    curl -X POST --data '{"serialNumber":"054f967f"}' http://localhost:8080/imaging/
 
 
 

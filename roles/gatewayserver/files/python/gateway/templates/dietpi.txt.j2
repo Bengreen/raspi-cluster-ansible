@@ -65,7 +65,7 @@ AUTO_SETUP_CUSTOM_SCRIPT_EXEC=0
 
 ##### Software Options #####
 # SSH Server Selection: 0=none/custom | -1=Dropbear | -2=OpenSSH
-AUTO_SETUP_SSH_SERVER_INDEX=-1
+AUTO_SETUP_SSH_SERVER_INDEX=-2
 
 # File Server Selection: 0=none/custom | -1=ProFTP | -2=Samba
 AUTO_SETUP_FILE_SERVER_INDEX=0
@@ -92,7 +92,7 @@ AUTO_SETUP_AUTOSTART_LOGIN_USER=root
 # On first login, run update, initial setup and software installs without any user input
 # - Setting this to "1" is required for below settings to take effect
 # - It is HIGHLY recommended to also set CONFIG_BOOT_WAIT_FOR_NETWORK=2, to force infinite wait for network connection during boot and prevent connection timeout errors.
-AUTO_SETUP_AUTOMATED=0
+AUTO_SETUP_AUTOMATED=1
 
 # Global Password to be applied for the system
 # - Affects user "root" and "dietpi" login passwords, and, all software installed by dietpi-software, that requires a login password
@@ -104,7 +104,7 @@ AUTO_SETUP_GLOBAL_PASSWORD={{ password }}
 # - Add as many entries as you wish, one each line.
 # - DietPi will automatically install all pre-reqs (e.g. ALSA/X11 for desktops etc)
 # - E.g. the following (without the leading "#") will install the LXDE desktop automatically on first boot:
-#AUTO_SETUP_INSTALL_SOFTWARE_ID=20
+AUTO_SETUP_INSTALL_SOFTWARE_ID=20
 
 #------------------------------------------------------------------------------------------------------
 # D I E T - P I

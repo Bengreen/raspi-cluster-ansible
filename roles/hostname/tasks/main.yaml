@@ -1,4 +1,14 @@
 ---
+
+- name: Install hostname packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    # update_cache: yes
+  vars:
+    packages:
+    - dbus
+
 - name: Set name of host
   hostname: 
     name: "{{ hostname }}"
