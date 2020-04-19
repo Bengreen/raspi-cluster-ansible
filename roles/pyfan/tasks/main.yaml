@@ -39,4 +39,4 @@
 - name: Make sure pyfan service is running
   systemd:
     name: pyfan
-    state: started
+    enabled: yes
