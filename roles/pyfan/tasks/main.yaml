@@ -1,0 +1,42 @@
+- name: Set Config
+  set_fact:
+    targetDir: /opt/pyfan
+
+- name: pyfan user
+  user:
+    name: pyfan
+    shell: /usr/sbin/nologin
+    groups: gpio
+
+- name: Python venv tools
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - python3-pip
+    - python-setuptools # Needed for ansible to switch to python3
+    - virtualenv
+
+- name: Copy Pyfan files
+  copy:
+    src: pyfan
+    dest: "{{ targetDir }}"
+  notify: Restart PyFan
+
+- name: Install PyFan app
+  pip:
+    name: "{{ targetDir }}/pyfan"
+    virtualenv: "{{ targetDir }}/venv"
+    virtualenv_python: python3.7
+
+- name: PyFan Systemd
+  copy:
+    src: pyfan/systemd/pyfan.service
+    dest: /etc/systemd/system/
+
+- name: Make sure pyfan service is running
+  systemd:
+    name: pyfan
+    state: started

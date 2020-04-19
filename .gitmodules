@@ -1,0 +1,3 @@
+[submodule "roles/pyfan/files/pyfan"]
+	path = roles/pyfan/files/pyfan
+	url = https://github.com/Bengreen/pi-fan-controller.git

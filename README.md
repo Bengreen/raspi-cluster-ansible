@@ -17,6 +17,13 @@ Initial ping to nodes (using dietpi to login). Then setup ansible user
     ansible k8sclient -m ping -u dietpi -k
     ansible-playbook ansible-initial-config.yaml -l k8sclient -kb -u dietpi
 
+Run the k8sclient playbook
+
+    ansible-playbook k8sclient.yaml
+
+Follow the status of a service
+
+    journalctl -f -u pyfan
 
 # Setup roles for Gateway
 

@@ -1,0 +1,9 @@
+- name: Restart PyFan
+  systemd:
+    name: pyfan
+    state: restarted
+- name: Restart PyFan
+  systemd:
+    name: pyfan
+    state: restarted
+ 
