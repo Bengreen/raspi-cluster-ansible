@@ -1,6 +1,11 @@
-- name: Copy Gateway files
+- name: Copy Firmware config
   copy:
-    src: rpi-eeprom-update
+    src: files/bootconf.txt
+    dest: /etc/default/bootconf.txt
+
+- name: Configure stable eeprom channel
+  copy:
+    src: files/rpi-eeprom-update
     dest: /etc/default/rpi-eeprom-update
   notify: Restart rpi-eeprom-update
 

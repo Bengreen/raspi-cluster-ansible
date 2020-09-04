@@ -1,3 +1,33 @@
+# Initial Gateway setup 
+
+From an empty system install the following onto gateway:
+
+    apt install ansible ssh-askpass git tmux
+    git clone https://github.com/Bengreen/raspi-cluster-ansible.git
+    git submodule --init update
+
+    git config --global user.name "Ben Greene"
+    git config --global user.email "BenJGreene@gmail.com"
+
+    ssh-keygen
+    ssh ben.greene@192.168.1.140
+
+    ansible gateway -m ping -u ben.greene -k
+    ansible-playbook ansible-initial-config.yaml -l gateway -kKb
+
+    ansible-playbook gateway.yaml
+
+# Add Clients
+
+add the nodes to the hosts file on the gateway at /etc/ansible/hosts
+
+Manually log into each client to set the ssh keys
+
+    ansible k8s -m ping -u dietpi -k
+    ansible-playbook ansible-initial-config.yaml -l k8s -u dietpi -kKb
+
+
+
 When first adding a computer:
 Add the user you want to initially log into the system (e.g. ben.greene)
 add ben.greene to sudoers group
@@ -19,7 +49,7 @@ Initial ping to nodes (using dietpi to login). Then setup ansible user
 
 Run the k8sclient playbook
 
-    ansible-playbook k8sclient.yaml
+    ansible-playbook k8s.yaml
 
 Follow the status of a service
 
@@ -58,9 +88,10 @@ An http server to manage imaging process and other tasks
 
 # Things to do
 
-* [ ] Set the /etc/default/rpi-eeprom-update  to track stable
+* [x] Set the /etc/default/rpi-eeprom-update  to track stable
   https://www.raspberrypi.org/documentation/hardware/raspberrypi/booteeprom.md
 * [ ] Set the boot config of EEPROM
   https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2711_bootloader_config.md
-* [ ] Install the fan control
+* [x] Install the fan control
 * [ ] Set the default user for ssh login on dietpi for first boot
+* [ ] Add /etc/dnsmasq.d to config of dnsmasq
