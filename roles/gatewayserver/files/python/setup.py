@@ -31,6 +31,8 @@ setuptools.setup(
         "aiohttp-session==2.7.0",
         "pydantic==0.25",
         "python-systemd",
+        "requests",
+        "click",
     ],
     extras_require={
         "dev": [
