@@ -26,10 +26,10 @@ setuptools.setup(
     },
     zip_safe=False,
     install_requires=[
-        "aiohttp==3.5.4",
-        "aiohttp-jinja2==1.1.1",
-        "aiohttp-session==2.7.0",
-        "pydantic==0.25",
+        "aiohttp",
+        "aiohttp-jinja2",
+        "aiohttp-session",
+        "pydantic",
         "python-systemd",
         "requests",
         "click",
@@ -40,6 +40,6 @@ setuptools.setup(
         ]
     },
     entry_points={
-        # "console_scripts": ["gateway = gateway.cli:cli"],
+        "console_scripts": ["gateway = gateway.cli:cli"],
     },
 )
