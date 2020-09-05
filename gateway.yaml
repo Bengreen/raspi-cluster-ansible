@@ -13,7 +13,7 @@
     - vlan
     - dnsmasq
     - router
-    # - initrd
+    - initrd
     - gatewayserver
     # - nfs-server
     # - piCore
