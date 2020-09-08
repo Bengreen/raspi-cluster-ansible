@@ -120,11 +120,29 @@ class InstallConfig(web.View):
         name = self.request.match_info['name']
         context = {
             "password": "archive1",
+            "hostname": "DietPi",
         }
-        return aiohttp_jinja2.render_template('dietpi.txt.j2',
+        return aiohttp_jinja2.render_template('dietpi-j2.txt',
                                               self.request,
                                               context)
-        return web.json_response(config)
+
+
+class PostInstallConfig(web.View):
+    async def head(self):
+        name = self.request.match_info['name']
+        context = {
+        }
+        return aiohttp_jinja2.render_template('post-install-j2.sh',
+                                              self.request,
+                                              context)
+
+    async def get(self):
+        name = self.request.match_info['name']
+        context = {
+        }
+        return aiohttp_jinja2.render_template('post-install-j2.sh',
+                                              self.request,
+                                              context)
 
 
 class Alive(web.View):

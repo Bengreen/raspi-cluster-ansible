@@ -1,8 +1,13 @@
 ---
 - name: Install iptables
-  yum:
-    name: iptables
+  apt:
+    name: "{{ packages }}"
     state: present
+    update_cache: yes
+  vars:
+    packages:
+    - iptables
+    - iptables-persistent
 
 - name: Enable IP forwarding
   sysctl:

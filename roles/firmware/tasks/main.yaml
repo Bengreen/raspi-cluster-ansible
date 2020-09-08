@@ -9,3 +9,10 @@
     dest: /etc/default/rpi-eeprom-update
   notify: Restart rpi-eeprom-update
 
+- name: Create firmware
+  command: rpi-eeprom-config --config /etc/default/bootconf.txt --out /lib/firmware/raspberrypi/bootloader/pieeprom-2020-07-31-net.bin /lib/firmware/raspberrypi/bootloader/stable/pieeprom-2020-07-31.bin
+
+- name: Install firmware
+  when: false
+  command: echo rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/pieeprom-2020-07-31-net.bin
+
