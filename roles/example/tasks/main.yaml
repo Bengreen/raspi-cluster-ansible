@@ -1,0 +1,23 @@
+---
+-  debug:
+     msg: "{{ item }}"
+   with_inventory_hostnames:
+   - k8s:
+
+
+- debug: var=inventory_hostname
+- debug: var=ansible_hostname
+  #- debug: var=hostvars
+
+  #- debug: var=hostvars[item]
+  #  with_items: "{{ groups['k8s'] }}"
+
+- debug:
+    msg: "{{ groups['k8s'] }}"
+
+- name: dnsmasq dhcp static addresses
+  template:
+    src: dnsmasq-dhcp-static
+    dest: /tmp/dnsmasq-dhcp
+
+

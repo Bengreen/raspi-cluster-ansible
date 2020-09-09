@@ -17,14 +17,23 @@ all:
       hosts:
         192.168.1.91:
           hostname: samspi
-    k8s:
-      hosts:
-        192.168.2.107:
-          hostname: k8s0
-        192.168.2.190:
-          hostname: k8s1
-        192.168.2.152:
-          hostname: k8s2
+    dhcpclients:
+      hosts: {}
+      children:
+        k8s:
+          hosts:
+            192.168.2.107:
+              hostname: k8s0
+              ip: 192.168.2.150
+              mac: dc:a6:32:b8:8b:c2
+            192.168.2.190:
+              hostname: k8s1
+              ip: 192.168.2.151
+              mac: dc:a6:32:55:76:33
+            192.168.2.152:
+              hostname: k8s2
+              ip: 192.168.2.152
+              mac: dc:a6:32:48:4c:eb
     gateway:
       hosts:
         192.168.1.140:

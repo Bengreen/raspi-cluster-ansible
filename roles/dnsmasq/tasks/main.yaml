@@ -23,7 +23,7 @@
     group: root
     mode: 0644
   notify: reload dnsmasq
-
+ 
 - name: Ensure dnsmasq is running
   service:
     name: dnsmasq

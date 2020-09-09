@@ -1,0 +1,3 @@
+{% for result in groups['k8s'] %}
+dhcp-host={{ hostvars[result].mac }},{{ hostvars[result].ip }}
+{% endfor %}
