@@ -23,16 +23,16 @@ all:
         k8s:
           hosts:
             192.168.2.107:
-              hostname: k8s0
-              ip: 192.168.2.150
+              hostname: k8s100
+              ip: 192.168.2.100
               mac: dc:a6:32:b8:8b:c2
             192.168.2.190:
-              hostname: k8s1
-              ip: 192.168.2.151
+              hostname: k8s101
+              ip: 192.168.2.101
               mac: dc:a6:32:55:76:33
             192.168.2.152:
-              hostname: k8s2
-              ip: 192.168.2.152
+              hostname: k8s102
+              ip: 192.168.2.102
               mac: dc:a6:32:48:4c:eb
     gateway:
       hosts:

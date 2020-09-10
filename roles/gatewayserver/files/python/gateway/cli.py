@@ -20,6 +20,7 @@ def ping(host, port):
 
     click.echo(r)
 
+
 @cli.command()
 @click.option('--host', default='localhost', help='Hostname of server')
 @click.option('--port', default=8080, help='port of server')
@@ -32,8 +33,24 @@ def images(host, port):
 
     click.echo(r.text)
 
+
+@cli.command()
+@click.option('--host', default='localhost', help='Hostname of server')
+@click.option('--port', default=8080, help='port of server')
+@click.argument("config")
+def config(host, port, config):
+    """Fetch the named config"""
+    hostUrl="http://%s:%s" % (host, port)
+    click.echo('Images on: %s' % (hostUrl))
+
+    r=requests.get("%s/config/%s" % (hostUrl, config))
+
+    click.echo(r.text)
+
+
 @cli.group()
 def imaging():
+    """Interact with imaging tooling"""
     pass
 
 
@@ -84,8 +101,6 @@ def get(host, port, serials):
             click.echo(", ".join(sources))
         else:
             click.echo("No imaging")
-
-
 
 
 if __name__ == '__main__':

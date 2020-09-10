@@ -120,7 +120,7 @@ class InstallConfig(web.View):
         name = self.request.match_info['name']
         context = {
             "password": "archive1",
-            "hostname": "DietPi",
+            "hostname": "k8s%02d" % (int(self.request.remote.split(".")[3])),
         }
         return aiohttp_jinja2.render_template('dietpi-j2.txt',
                                               self.request,
