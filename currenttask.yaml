@@ -1,5 +1,5 @@
 ---
-- hosts: gateway
+- hosts: k8s100
   vars:
     ansible_user: ansible
     ansible_become: yes
@@ -9,12 +9,13 @@
       - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
   roles:
-  - example
+  - k8s
+    #- example
     # - nfs-server
     # - vlan
     # - dnsmasq
     # - router
-    # - initrd
+    #- initrd
     # - piCore
     # - dietpiclient
     # - gatewayserver

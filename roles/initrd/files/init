@@ -29,5 +29,19 @@ mount
 
 
 /download.sh
+RESULT=$?
+if [ $RESULT -eq 0 ]; then
+  echo Successful imaging
+else
+  fdisk -l
+  echo Failed imaging
+  sleep 10
+fi
 
-/bin/busybox sh
+echo Rebooting....
+sleep 5
+reboot -f
+
+#/bin/busybox sh
+
+

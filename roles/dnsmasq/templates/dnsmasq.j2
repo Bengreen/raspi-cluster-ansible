@@ -4,6 +4,6 @@ log-dhcp
 enable-tftp
 tftp-root=/tftpboot
 pxe-service=0,"Raspberry Pi Boot"
-{% for result in groups['k8s'] %}
-dhcp-host={{ hostvars[result].mac }},{{ hostvars[result].ip }}
+{% for host in groups['k8s'] %}
+dhcp-host={{ hostvars[host].mac }},{{ hostvars[host].ip }}
 {% endfor %}

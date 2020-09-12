@@ -15,5 +15,6 @@
     - router
     - initrd
     - gatewayserver
+    - firmware
     # - nfs-server
     # - piCore

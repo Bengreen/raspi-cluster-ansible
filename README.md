@@ -39,13 +39,14 @@ Then follow this command where samspi is the hostname (found in hosts file)
 
 after reimaging you will need to clear the old host key and then get a new host key
 
-    ssh-keygen -f "/home/ben.greene/.ssh/known_hosts" -R "192.168.2.191"
+    ssh-keygen -f "/home/ben.greene/.ssh/known_hosts" -R "k8s100"
+    ssh-keygen -f "/home/ben.greene/.ssh/known_hosts" -R "192.168.2.100"
     ssh dietpi@192.168.2.191
 
 Initial ping to nodes (using dietpi to login). Then setup ansible user
 
     ansible k8sclient -m ping -u dietpi -k
-    ansible-playbook ansible-initial-config.yaml -l k8sclient -kb -u dietpi
+    ansible-playbook ansible-initial-config.yaml -l k8s -kb -u dietpi
 
 Run the k8sclient playbook
 
@@ -54,6 +55,7 @@ Run the k8sclient playbook
 Follow the status of a service
 
     journalctl -f -u pyfan
+
 
 # Setup roles for Gateway
 

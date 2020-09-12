@@ -12,7 +12,12 @@
 - name: Create firmware
   command: rpi-eeprom-config --config /etc/default/bootconf.txt --out /lib/firmware/raspberrypi/bootloader/pieeprom-2020-07-31-net.bin /lib/firmware/raspberrypi/bootloader/stable/pieeprom-2020-07-31.bin
 
+
+- name: Copy commit ref to file
+  copy:
+    content: "rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/pieeprom-2020-07-31-net.bin"
+    dest: /root/configFirmware
+
 - name: Install firmware
-  when: false
   command: echo rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/pieeprom-2020-07-31-net.bin
 
