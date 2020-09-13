@@ -21,6 +21,9 @@ all:
       hosts: {}
       children:
         k8s:
+          vars:
+            ansible_user: ansible
+            ansible_become: yes
           hosts:
             k8s100:
               ip: 192.168.2.100

@@ -1,0 +1,15 @@
+---
+
+- name: Wheel sudo
+  lineinfile:
+    path: /etc/sudoers.d/wheel
+    create: yes
+    line: '%wheel ALL=(ALL:ALL) NOPASSWD:ALL'
+    insertafter: EOF
+    state: present
+    validate: 'visudo -cf %s'
+
+- name: Wheel
+  group:
+    name: wheel
+    state: present

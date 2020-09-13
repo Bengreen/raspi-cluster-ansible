@@ -1,0 +1,4 @@
+---
+new_user: newuser
+docker_version: "5:19.03.12~3-0~debian-buster"
+kubernetes_version: "1.19.1-00"

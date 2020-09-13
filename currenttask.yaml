@@ -1,15 +1,25 @@
 ---
-- hosts: k8s100
+- hosts: k8s
   vars:
-    ansible_user: ansible
-    ansible_become: yes
-    vlan_interface: eth0
-    vlan_tag: "3"
-    nfs_exports:
-      - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
-      - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
+    # ansible_user: ansible
+    # ansible_become: yes
+    # vlan_interface: eth0
+    # vlan_tag: "3"
+    # nfs_exports:
+    #   - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
+    #   - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
   roles:
-  - k8s
+  - users
+  - k8s-all
+- hosts: k8s100
+  roles:
+  - k8s-master
+- hosts: k8s102
+  roles:
+  - k8s-worker
+- hosts: k8s101
+  roles:
+  - k8s-worker
     #- example
     # - nfs-server
     # - vlan

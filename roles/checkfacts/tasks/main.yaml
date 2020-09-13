@@ -1,0 +1,3 @@
+---
+- debug:
+    msg: "k8sMasterToken {{ hostvars['k8s100']['k8sMasterToken'] }}"

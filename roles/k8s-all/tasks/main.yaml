@@ -1,0 +1,83 @@
+---
+#examples: https://gist.github.com/carlosedp/1b72b0d80c960e72f10698e2c95f3f1f
+#
+#
+# - debug: var=ansible_facts
+- set_fact:
+    cacheable: yes
+    one_fact: something
+
+- name: Add Docker GPG key
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable"
+
+- name: Add Kubernetes GPG key
+  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add Kubernetes APT repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+
+
+- name: Docker Systemd config
+  copy:
+    src: files/daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  register: dockerDaemonFile
+
+- name: Debug dockerDaemonFile
+  debug:
+    msg: "LOOK HERE : {{ dockerDaemonFile }}"
+
+- name: Create Docker systemd file 
+  file: 
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: '0755'
+  register: dockerSystemdFile
+
+- name: Restart Docker Daemon
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+  when: dockerDaemonFile.changed or dockerSystemdFile.changed
+
+- name: Install Docker
+  apt:
+    name: "{{packages}}"
+    update_cache: yes
+  vars:
+    packages:
+    - docker-ce={{docker_version}}
+
+
+
+- name: Create user and add to wheel
+  user:
+    name: "{{ new_user }}"
+    groups:
+    - wheel
+    - docker
+    append: yes
+    state: present
+    createhome: yes
+
+- name: Install Kubernetes
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - kubelet={{ kubernetes_version }}
+    - kubeadm={{ kubernetes_version }}
+    - kubectl={{ kubernetes_version }}
+
+- name: Fetch images
+  command: kubeadm config images pull

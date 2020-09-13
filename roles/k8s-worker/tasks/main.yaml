@@ -1,0 +1,6 @@
+---
+- debug:
+    msg: "k8sMasterToken {{ hostvars['k8s100']['k8sMasterToken'] }}"
+
+- name: Join cluster
+  command: "kubeadm join 192.168.2.100:6443 --token {{ hostvars['k8s100']['k8sMasterToken'] }} --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s100']['k8sMasterCa'] }}"
