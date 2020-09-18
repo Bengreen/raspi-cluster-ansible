@@ -1,0 +1,4 @@
+---
+- name: shutdown
+  command: /usr/bin/shutdown -h 1 min
+  ignore_errors: yes
