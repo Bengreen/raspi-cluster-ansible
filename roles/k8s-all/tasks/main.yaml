@@ -3,9 +3,6 @@
 #
 #
 # - debug: var=ansible_facts
-- set_fact:
-    cacheable: yes
-    one_fact: something
 
 - name: Add Docker GPG key
   apt_key: url=https://download.docker.com/linux/ubuntu/gpg
@@ -31,10 +28,6 @@
     mode: '0644'
   register: dockerDaemonFile
 
-- name: Debug dockerDaemonFile
-  debug:
-    msg: "LOOK HERE : {{ dockerDaemonFile }}"
-
 - name: Create Docker systemd file 
   file: 
     path: /etc/systemd/system/docker.service.d
@@ -57,17 +50,21 @@
     packages:
     - docker-ce={{docker_version}}
 
-
-
 - name: Create user and add to wheel
   user:
-    name: "{{ new_user }}"
+    name: "{{ k8sAdminUser }}"
     groups:
     - wheel
     - docker
     append: yes
     state: present
     createhome: yes
+
+- name: Add ssh keys
+  authorized_key:
+    user: "{{ k8sAdminUser }}"
+    state: present
+    key: "{{ lookup('file', '/home/ben.greene/.ssh/id_rsa.pub') }}"
 
 - name: Install Kubernetes
   apt:

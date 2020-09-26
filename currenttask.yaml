@@ -1,6 +1,7 @@
 ---
 - hosts: k8s
   vars:
+    # k8sAdminUser: k8sadmin
     # ansible_user: ansible
     # ansible_become: yes
     # vlan_interface: eth0
@@ -12,6 +13,8 @@
   - users
   - k8s-all
 - hosts: k8s100
+  vars:
+    k8sAdminUser: k8sadmin
   roles:
   - k8s-master
 - hosts: k8s102

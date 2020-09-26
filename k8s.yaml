@@ -2,6 +2,7 @@
 - hosts: k8s
   vars:
     ansible_user: ansible
+    k8sAdminUser: k8sadmin
     ansible_become: yes
   roles:
     - hostname
