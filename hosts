@@ -36,7 +36,7 @@ all:
               mac: dc:a6:32:48:4c:eb
     gateway:
       hosts:
-        192.168.1.142:
+        192.168.1.100:
           hostname: gateway
 # Ex 1: Ungrouped hosts, specify before any group headers.
 

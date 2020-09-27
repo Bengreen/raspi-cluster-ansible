@@ -1,0 +1,4 @@
+{% for host in groups['k8s'] %}
+Host {{ host }}
+  User ansible
+{% endfor %}

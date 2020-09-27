@@ -16,5 +16,4 @@
     - initrd
     - gatewayserver
     - firmware
-    # - nfs-server
-    # - piCore
+    - k8s-utils

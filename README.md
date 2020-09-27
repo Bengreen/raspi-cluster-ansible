@@ -23,8 +23,8 @@ add the nodes to the hosts file on the gateway at /etc/ansible/hosts
 
 Manually log into each client to set the ssh keys
 
-    ansible k8s -m ping -u dietpi -k
-    ansible-playbook ansible-initial-config.yaml -l k8s -u dietpi -kKb
+    ansible k8s -m ping -k -e "ansible_ssh_user=dietpi"
+    ansible-playbook ansible-initial-config.yaml -l k8s -kKb -e "ansible_ssh_user=dietpi"
 
 
 
@@ -85,7 +85,13 @@ An http server to manage imaging process and other tasks
 
     curl -X POST --data '{"serialNumber":"054f967f"}' http://localhost:8080/imaging/
 
+# Reset k8s nodes
 
+Reset all
+    kubeadm reset -f
+    rm -rf /etc/cni/net.d/*
+    iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+Reset master
 
 
 # Things to do

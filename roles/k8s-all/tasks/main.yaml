@@ -11,13 +11,29 @@
   apt_repository:
     repo: "deb https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable"
 
-- name: Add Kubernetes GPG key
-  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+- name: Install Docker
+  apt:
+    name: "{{packages}}"
+    update_cache: yes
+  vars:
+    packages:
+    - docker-ce={{docker_version}}
 
-- name: Add Kubernetes APT repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+- name: Create user and add to wheel and docker
+  user:
+    name: "{{ k8sAdminUser }}"
+    groups:
+    - wheel
+    - docker
+    append: yes
+    state: present
+    createhome: yes
 
+- name: Add ssh keys
+  authorized_key:
+    user: "{{ k8sAdminUser }}"
+    state: present
+    key: "{{ lookup('file', '/home/ben.greene/.ssh/id_rsa.pub') }}"
 
 - name: Docker Systemd config
   copy:
@@ -41,40 +57,6 @@
     state: restarted
     daemon_reload: yes
   when: dockerDaemonFile.changed or dockerSystemdFile.changed
-
-- name: Install Docker
-  apt:
-    name: "{{packages}}"
-    update_cache: yes
-  vars:
-    packages:
-    - docker-ce={{docker_version}}
-
-- name: Create user and add to wheel
-  user:
-    name: "{{ k8sAdminUser }}"
-    groups:
-    - wheel
-    - docker
-    append: yes
-    state: present
-    createhome: yes
-
-- name: Add ssh keys
-  authorized_key:
-    user: "{{ k8sAdminUser }}"
-    state: present
-    key: "{{ lookup('file', '/home/ben.greene/.ssh/id_rsa.pub') }}"
-
-- name: Install Kubernetes
-  apt:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-    - kubelet={{ kubernetes_version }}
-    - kubeadm={{ kubernetes_version }}
-    - kubectl={{ kubernetes_version }}
 
 - name: Fetch images
   command: kubeadm config images pull

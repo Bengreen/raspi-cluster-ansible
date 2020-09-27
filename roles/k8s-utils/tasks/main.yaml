@@ -1,0 +1,24 @@
+---
+#examples: https://gist.github.com/carlosedp/1b72b0d80c960e72f10698e2c95f3f1f
+#
+#
+# - debug: var=ansible_facts
+
+- name: Add Kubernetes GPG key
+  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add Kubernetes APT repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: Install Kubernetes
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: present
+  vars:
+    packages:
+    - kubelet={{ kubernetes_version }}
+    - kubeadm={{ kubernetes_version }}
+    - kubectl={{ kubernetes_version }}
+
