@@ -16,4 +16,6 @@
     - initrd
     - gatewayserver
     - firmware
-    - k8s-utils
+    - role: k8s-utils
+      tags: k8s
+

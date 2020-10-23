@@ -22,3 +22,21 @@
     - kubeadm={{ kubernetes_version }}
     - kubectl={{ kubernetes_version }}
 
+- name: Helm Dirs
+  file:
+    path: /opt/helm
+    state: directory
+    mode: '0755'
+
+- name: Install Helm
+  unarchive:
+    src: https://get.helm.sh/helm-v3.3.4-linux-arm.tar.gz
+    dest: /opt/helm/
+    remote_src: yes
+    creates: /opt/helm/linux-arm/helm
+
+- name: Symlink Helm
+  file:
+    state: link
+    src: /opt/helm/linux-arm/helm
+    dest: /usr/bin/helm
