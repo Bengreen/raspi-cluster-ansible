@@ -51,12 +51,21 @@
     mode: '0755'
   register: dockerSystemdFile
 
+# Expose docker on a port BUT better to run registry as a container application.
+# https://linuxhint.com/setup_own_docker_image_repository/
+# https://docs.docker.com/registry/
+- name: Override docker systemd
+  copy:
+    src: files/docker_override.conf
+    dest: /etc/systemd/system/docker.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: false
+
 - name: Restart Docker Daemon
   systemd:
     name: docker
     state: restarted
     daemon_reload: yes
   when: dockerDaemonFile.changed or dockerSystemdFile.changed
-
-- name: Fetch images
-  command: kubeadm config images pull

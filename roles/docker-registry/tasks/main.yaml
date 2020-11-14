@@ -1,0 +1,18 @@
+---
+- name: Docker Registery systemd
+  copy:
+    src: systemd/docker-registry.service
+    dest: /etc/systemd/system/
+  register: dockerRegistrySystemdFile
+  notify: Restart docker-registry
+
+- name: Docker image dir
+  file:
+    path: /var/lib/registry
+    state: directory
+    mode: '0755'
+
+- name: Make sure docker-registry is running
+  systemd:
+    name: docker-registry
+    enabled: yes

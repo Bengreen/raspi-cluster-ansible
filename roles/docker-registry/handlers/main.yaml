@@ -1,0 +1,6 @@
+- name: Restart docker-registry
+  systemd:
+    name: docker-registry
+    daemon_reload: yes
+    state: restarted
+ 

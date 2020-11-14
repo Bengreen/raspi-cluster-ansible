@@ -1,4 +1,8 @@
 ---
+- name: Wheel
+  group:
+    name: wheel
+    state: present
 
 - name: Wheel sudo
   lineinfile:
@@ -9,7 +13,3 @@
     state: present
     validate: 'visudo -cf %s'
 
-- name: Wheel
-  group:
-    name: wheel
-    state: present

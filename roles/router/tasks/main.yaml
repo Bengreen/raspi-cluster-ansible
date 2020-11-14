@@ -42,3 +42,63 @@
     out_interface: eth0
     jump: ACCEPT
 
+# Begin K8s API forwarding
+# https://www.digitalocean.com/community/tutorials/how-to-forward-ports-through-a-linux-gateway-with-iptables#:~:text=%20How%20To%20Forward%20Ports%20through%20a%20Linux,this%20to%20our%20permanent%20rule%20set.%20More%20
+- name: Forward new k8s api
+  iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    jump: ACCEPT
+    destination_port: 6443
+    ctstate:
+      - NEW
+    protocol: tcp
+    syn: match
+    match:
+      - conntrack
+
+- name: Forward existing k8s api connections from external to internal
+  iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    jump: ACCEPT
+    ctstate:
+      - ESTABLISHED
+      - RELATED
+    match:
+      - conntrack
+
+- name: Forward existing k8s api connections from internal to external
+  iptables:
+    chain: FORWARD
+    in_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    out_interface: eth0
+    jump: ACCEPT
+    ctstate:
+      - ESTABLISHED
+      - RELATED
+    match:
+      - conntrack
+
+- name: K8s API change reroute destination
+  iptables:
+    table: nat
+    chain: PREROUTING
+    in_interface: eth0
+    jump: DNAT
+    destination_port: 6443
+    protocol: tcp
+    to_destination: 192.168.2.100
+
+- name: K8s API change reroute source
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ vlan_interface }}.{{ vlan_tag }}"
+    jump: SNAT
+    destination_port: 6443
+    protocol: tcp
+    to_source: 192.168.2.1
+    destination: 192.168.2.100

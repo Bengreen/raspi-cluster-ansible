@@ -14,7 +14,9 @@
     - dnsmasq
     - router
     - initrd
-    - gatewayserver
+    # - gatewayserver
+    - docker
+    - docker-registry
     - firmware
     - role: k8s-utils
       tags: k8s
