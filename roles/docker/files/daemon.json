@@ -4,5 +4,7 @@
     "log-opts": {
       "max-size": "100m"
     },
-    "storage-driver": "overlay2"
+    "storage-driver": "overlay2",
+    "insecure-registries": ["dockerreg.k8s:5000","dockerreg.k8s:5001"],
+    "registry-mirrors": ["http://dockerreg.k8s:5001"]
   }

@@ -4,3 +4,9 @@
     daemon_reload: yes
     state: restarted
  
+- name: Restart docker-proxy
+  systemd:
+    name: docker-proxy
+    daemon_reload: yes
+    state: restarted
+ 

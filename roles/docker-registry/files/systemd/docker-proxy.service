@@ -1,0 +1,17 @@
+[Unit]
+Description=Docker Proxy
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+RestartSec=10s
+ExecStartPre=-/usr/bin/docker stop %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull registry
+ExecStart=/usr/bin/docker run --rm -v /var/lib/docker.io-proxy:/var/lib/registry -e REGISTRY_PROXY_REMOTEURL=http://registry-1.docker.io -p 5001:5000 --name %n registry
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

@@ -1,16 +1,28 @@
 ---
-- name: Docker Registery systemd
+- name: Docker Registry systemd
   copy:
     src: systemd/docker-registry.service
     dest: /etc/systemd/system/
-  register: dockerRegistrySystemdFile
   notify: Restart docker-registry
+
+- name: Docker Proxy Registry systemd
+  copy:
+    src: systemd/docker-proxy.service
+    dest: /etc/systemd/system/
+  notify: Restart docker-proxy
 
 - name: Docker image dir
   file:
     path: /var/lib/registry
     state: directory
     mode: '0755'
+
+- name: Docker.io proxy dir
+  file:
+    path: /var/lib/docker.io-proxy
+    state: directory
+    mode: '0755'
+
 
 - name: Make sure docker-registry is running
   systemd:

@@ -10,8 +10,8 @@
     #   - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
     #   - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
   roles:
-  - users
-  - k8s-all
+  # - users
+  # - k8s-all
 - hosts: k8s100
   vars:
     k8sAdminUser: k8sadmin

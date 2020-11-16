@@ -1,7 +1,18 @@
 ---
 
+- name: kubeadm reset
+  command: kubeadm reset -f
+  when: kubeAdmReset
+
+- name: Clear CNI
+  file:
+    state: absent
+    path: /etc/cni/net.d
+  when: kubeAdmReset
+
 - name: init kubeadm
   command: kubeadm init --pod-network-cidr=10.1.0.0/16 --apiserver-cert-extra-sans=192.168.1.100
+  when: kubeAdmReset
 
 - name: Get master token
   command: kubeadm token create # --print-join-command

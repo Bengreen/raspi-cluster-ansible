@@ -1,13 +1,19 @@
 
 
+- name: config.txt cmdline_sd.txt
+  lineinfile:
+    path: /tftpboot/config.txt
+    regexp: '^cmdline:*'
+    line: "cmdline=cmdline_sd.txt"
+    insertbefore: BOF
 
-- name: config.txt sd
-  template:
-    src: config.j2
-    dest: /tftpboot/config.txt
-    owner: root
-    group: root
-    mode: 0644
+# - name: config.txt sd
+#   template:
+#     src: config.j2
+#     dest: /tftpboot/config.txt
+#     owner: root
+#     group: root
+#     mode: 0644
 
 - name: cmdline_sd
   template:

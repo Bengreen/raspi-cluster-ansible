@@ -14,6 +14,7 @@
     - dnsmasq
     - router
     - initrd
+    - dietpiclient
     # - gatewayserver
     - docker
     - docker-registry

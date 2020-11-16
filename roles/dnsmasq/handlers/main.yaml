@@ -1,10 +1,4 @@
 ---
-- name: populate tftpboot
-  copy:
-    src: /boot/
-    dest: /tftpboot
-    mode: preserve
-
 - name: reload dnsmasq
   service:
     name: dnsmasq
