@@ -1,6 +1,7 @@
 ---
 - hosts: k8s
   vars:
+    kubeAdmReset: false
     # k8sAdminUser: k8sadmin
     # ansible_user: ansible
     # ansible_become: yes

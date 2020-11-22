@@ -28,3 +28,8 @@
   systemd:
     name: docker-registry
     enabled: yes
+
+- name: Make sure docker-proxy is running
+  systemd:
+    name: docker-proxy
+    enabled: yes
