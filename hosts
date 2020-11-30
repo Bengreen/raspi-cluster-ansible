@@ -17,6 +17,10 @@ all:
       hosts:
         192.168.1.91:
           hostname: samspi
+    dadspi:
+      hosts:
+        192.168.1.126:
+          hostname: dadspi.lan
     dhcpclients:
       hosts: {}
       children:

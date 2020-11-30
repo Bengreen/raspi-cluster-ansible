@@ -14,7 +14,7 @@
   user:
     name: gateway
     shell: /usr/sbin/nologin
-    groups: gateway
+    groups: gateway,tftpwrite
 
 - name: Provide gateway with rw access to tftpboot
   file:

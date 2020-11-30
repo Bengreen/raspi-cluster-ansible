@@ -1,4 +1,10 @@
 ---
+- name: tftpwrite group
+  group:
+    name: tftpwrite
+    state: present
+
+
 - name: Install dnsmasq
   apt:
     name: "{{ packages }}"
@@ -13,6 +19,7 @@
     path: /tftpboot
     state: directory
     mode: '0755'
+    group: tftpwrite
   register: tftpbootDir
 
 - name: populate tftpboot
@@ -32,6 +39,15 @@
     mode: 0644
   notify: reload dnsmasq
  
+- name: local dnsmasq file
+  template:
+    src: eth0.dnsmasq.j2
+    dest: "/etc/dnsmasq.d/eth0"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload dnsmasq
+
 - name: Ensure dnsmasq is running
   service:
     name: dnsmasq

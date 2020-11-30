@@ -1,21 +1,40 @@
 ---
+- name: Clear Kube
+  block:
+  - name: Stop kubelet
+    systemd:
+      state: stopped
+      name: kubelet
 
-- name: kubeadm reset
-  command: kubeadm reset -f
+  - name: Clear cni network
+    command: ip link delete cni0
+    ignore_errors: yes
+
+  - name: Clear flannel network
+    command: ip link delete flannel.1
+    ignore_errors: yes
+
+  - name: kubeadm reset
+    command: kubeadm reset -f
+
+  - name: Clear CNI
+    file:
+      state: absent
+      path: /etc/cni/net.d
+
+  - name: init kubeadm
+    command: kubeadm init  --pod-network-cidr "10.244.0.0/16" --service-cidr "10.32.0.0/16" --apiserver-cert-extra-sans=192.168.1.100
   when: kubeAdmReset
 
-- name: Clear CNI
-  file:
-    state: absent
-    path: /etc/cni/net.d
-  when: kubeAdmReset
-
-- name: init kubeadm
-  command: kubeadm init --pod-network-cidr=10.1.0.0/16 --apiserver-cert-extra-sans=192.168.1.100
-  when: kubeAdmReset
+- name: Setp bridge forwarding
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    state: present
 
 - name: Get master token
-  command: kubeadm token create # --print-join-command
+  # command: kubeadm token create # --print-join-command
+  command: kubeadm --kubeconfig /etc/kubernetes/admin.conf token list -o jsonpath='{.token}'
   register: k8sMasterToken
 
 - name: Get master CA
@@ -25,37 +44,81 @@
     sha256sum | cut -d ' ' -f1
   register: k8sMasterCa
 
-- name: kubeconfig dir
-  file:
-    state: directory
-    path: "/home/{{ k8sAdminUser }}/.kube"
 
-- name: kubeconfig file
-  copy:
-    remote_src: yes
-    src: /etc/kubernetes/admin.conf
-    dest: "/home/{{ k8sAdminUser }}/.kube/config"
-    owner: root
-    group: root
-    mode: '0755'
+- name: Calico CNI
+  block:
+  - fail:
+      msg: No ARMv7 images for Calico
+  - name: Tigera Operator
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+  - name: Calico Config
+    command:
+      cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf create -f -
+      stdin: "{{ calico.config | to_nice_yaml(indent=2) }}"
+  when: cni == 'calico'
 
-# THERE are NO armv7 images so does not work
-#- name: Install Network driver
-#  command: kubectl apply -f "https://docs.projectcalico.org/manifests/calico.yaml"
+- name: Weave CNI
+  block:
+  - name: k8s version
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf version
+    register: k8sVersion
 
-# Weave does not work with error illegal instruction core dump
-- name: Install Weave Net network driver
-  command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-  register: weavenet_driver
-  when: false
+  # Weave does not work with error illegal instruction core dump
+  - fail:
+      msg: Illegal instruction core dump when running Weave
 
-- name: Install Flannel network driver
+  - name: Install Weave Net network driver
+    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://cloud.weave.works/k8s/net?k8s-version={{ k8sVersion.stdout | b64encode }}"
+
+  when: cni == 'weave'
+
+- name: Flannel CNI
   command: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-  register: flannel_driver
-  when: true
+  when: cni == 'flannel'
+
+
+- name: Metallb
+  block:
+  - name: Create namespace
+    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/manifests/namespace.yaml"
+
+  - name: Set kube-proxy strictARP
+    shell: >-
+      kubectl --kubeconfig /etc/kubernetes/admin.conf get configmap kube-proxy -n kube-system -o yaml |
+      sed -e "s/strictARP: false/strictARP: true/" |
+      kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f - -n kube-system
+
+  - name: Install
+    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/manifests/metallb.yaml"
+
+  - name: Create Secret
+    command: openssl rand -base64 128
+    register: metallbSecret
+
+  - name: Install Secret
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
+  
+  - name: Install Config
+    command:
+      cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+      stdin: "{{ metallb.config | to_nice_yaml(indent=2) }}"
+
+- name: Traefik
+  block:
+  - name: Traefik helm repo
+    command: "{{ item }}"
+    with_items:
+      - helm repo add traefik https://helm.traefik.io/traefik
+      - helm repo update
+      - helm --kubeconfig /etc/kubernetes/admin.conf -n default upgrade -i traefik traefik/traefik
+
+
+- name: Read kubeconfig
+  command: cat /etc/kubernetes/admin.conf
+  register: kubeconfigCat
 
 - name: Kubernetes master token
   set_fact:
     k8sMasterToken: "{{ k8sMasterToken.stdout }}"
     k8sMasterCa: "{{ k8sMasterCa.stdout }}"
-
+    kubeconfig: "{{ kubeconfigCat.stdout }}"

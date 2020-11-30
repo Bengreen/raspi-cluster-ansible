@@ -117,3 +117,9 @@
     # owner: root
     # group: root
     # mode: 0644
+
+- name: Copy standard filesystem
+  copy:
+    src: "{{ tftpDir }}/start4.elf"
+    dest: "{{ tftpDir }}/imager/"
+    remote_src: yes

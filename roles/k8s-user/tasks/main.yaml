@@ -1,0 +1,13 @@
+---
+- name: kubeconfig dir
+  file:
+    state: directory
+    path: "/home/{{ k8sAdminUser }}/.kube"
+
+- name: kubeconfig file
+  copy:    
+    dest: "/home/{{ k8sAdminUser }}/.kube/config"
+    content: "{{ hostvars['k8s100']['kubeconfig'] }}"
+    owner: "{{ k8sAdminUser }}"
+    group: "{{ k8sAdminUser }}"
+    mode: '0640'

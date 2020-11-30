@@ -18,6 +18,7 @@
     k8sAdminUser: k8sadmin
   roles:
   - k8s-master
+  - k8s-user
 - hosts: k8s102
   roles:
   - k8s-worker
@@ -34,3 +35,11 @@
     # - dietpiclient
     # - gatewayserver
     # - firmware
+- hosts: gateway
+  vars:
+    ansible_user: ansible
+    ansible_become: yes
+    k8sAdminUser: k8sadmin
+  roles:
+  - k8s-utils
+  - k8s-user

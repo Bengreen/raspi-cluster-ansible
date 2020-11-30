@@ -3,5 +3,6 @@
     - gateway
     - k8s
     - samspi
+    - dadspi
   roles:
     - ansible-sudo

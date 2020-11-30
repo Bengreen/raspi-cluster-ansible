@@ -1,0 +1,9 @@
+---
+- hosts: dadspi
+  vars:
+    ansible_user: ansible
+    k8sAdminUser: k8sadmin
+    ansible_become: yes
+  roles:
+    - hostname
+    - k8s-utils

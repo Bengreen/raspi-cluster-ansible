@@ -15,7 +15,7 @@
     - router
     - initrd
     - dietpiclient
-    # - gatewayserver
+    - gatewayserver
     - docker
     - docker-registry
     - firmware
