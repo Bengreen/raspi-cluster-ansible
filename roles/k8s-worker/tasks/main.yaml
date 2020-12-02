@@ -26,6 +26,28 @@
     file:
       state: absent
       path: /etc/cni/net.d
+  
+  - name: reset iptables
+    command:
+      cmd: "{{ item }}"
+    with_items:
+      - iptables -P INPUT ACCEPT
+      - iptables -P FORWARD ACCEPT
+      - iptables -P OUTPUT ACCEPT
+      - iptables-legacy -P INPUT ACCEPT
+      - iptables-legacy -P FORWARD ACCEPT
+      - iptables-legacy -P OUTPUT ACCEPT
+      - iptables -Z
+      - iptables -F
+      - iptables -t nat -F
+      - iptables -t mangle -F
+      - iptables -X
+      - iptables-legacy -Z
+      - iptables-legacy -F
+      - iptables-legacy -t nat -F
+      - iptables-legacy -t mangle -F
+      - iptables-legacy -X
+
   when: kubeAdmReset
 
 - name: Join cluster
