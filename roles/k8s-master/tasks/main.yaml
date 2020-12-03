@@ -132,10 +132,14 @@
   - name: Traefik helm repo
     command: "{{ item }}"
     with_items:
+      - kubectl --kubeconfig /etc/kubernetes/admin.conf create namespace traefik-system
       - helm repo add traefik https://helm.traefik.io/traefik
       - helm repo update
-      - helm --kubeconfig /etc/kubernetes/admin.conf -n default upgrade -i traefik traefik/traefik
-
+      - helm --kubeconfig /etc/kubernetes/admin.conf -n traefik-system upgrade -i traefik traefik/traefik
+  - name: Traefix dashboard
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n traefik-system apply -f -
+    args:
+      stdin: "{{ traefik.config | to_nice_yaml(indent=2) }}"
 
 - name: Read kubeconfig
   command: cat /etc/kubernetes/admin.conf
