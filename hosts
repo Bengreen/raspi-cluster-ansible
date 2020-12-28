@@ -15,12 +15,12 @@ all:
   children:
     samspi:
       hosts:
-        192.168.1.91:
-          hostname: samspi
+        samspi.lan:
+          ip: 192.168.1.91
     dadspi:
       hosts:
-        192.168.1.126:
-          hostname: dadspi.lan
+        dadspi.lan:
+          ip: 192.168.1.126
     dhcpclients:
       hosts: {}
       children:
@@ -29,13 +29,13 @@ all:
             ansible_user: ansible
             ansible_become: yes
           hosts:
-            k8s100:
+            k8s100.k8s:
               ip: 192.168.2.100
               mac: dc:a6:32:6f:e6:6e
-            k8s101:
+            k8s101.k8s:
               ip: 192.168.2.101
               mac: dc:a6:32:55:76:33
-            k8s102:
+            k8s102.k8s:
               ip: 192.168.2.102
               mac: dc:a6:32:48:4c:eb
     gateway:
