@@ -4,7 +4,6 @@
     name: tftpwrite
     state: present
 
-
 - name: Install dnsmasq
   apt:
     name: "{{ packages }}"
@@ -12,13 +11,13 @@
     update_cache: yes
   vars:
     packages:
-    - dnsmasq
+      - dnsmasq
 
 - name: tftpboot dir
   file:
     path: /tftpboot
     state: directory
-    mode: '0755'
+    mode: "0755"
     group: tftpwrite
   register: tftpbootDir
 
@@ -29,7 +28,6 @@
     mode: preserve
   when: tftpbootDir.changed
 
-
 - name: dnsmasq file
   template:
     src: dnsmasq.j2
@@ -38,11 +36,20 @@
     group: root
     mode: 0644
   notify: reload dnsmasq
- 
+
 - name: local dnsmasq file
   template:
     src: eth0.dnsmasq.j2
     dest: "/etc/dnsmasq.d/eth0"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload dnsmasq
+
+- name: local dnsmasq file
+  template:
+    src: docker0.dnsmasq.j2
+    dest: "/etc/dnsmasq.d/docker0"
     owner: root
     group: root
     mode: 0644
@@ -56,6 +63,6 @@
 - name: Configure resolve.conf to use dnsmasq dns
   lineinfile:
     path: /etc/dhcp/dhclient.conf
-    regexp: '^prepend domain-name-servers.*;'
+    regexp: "^prepend domain-name-servers.*;"
     line: "prepend domain-name-servers 192.168.2.1;"
-    insertafter: '^#supersede domain-name .*;'
+    insertafter: "^#supersede domain-name .*;"
