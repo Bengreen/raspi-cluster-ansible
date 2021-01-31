@@ -11,16 +11,22 @@
 
 
 all:
-  hosts: {}
-  children:
-    samspi:
-      hosts:
-        samspi.lan:
-          ip: 192.168.1.91
+  hosts:
+    netman:
+      ip: 192.168.1.74
+      static_ips:
+        - ip: 1.3.5.7
+          names:
+          - ben1
+          - ben2
+        - ip: 2.4.6.8
+          names:
+            ben3
     dadspi:
-      hosts:
-        dadspi.lan:
-          ip: 192.168.1.126
+      ip: 192.168.1.126
+    samspi:
+      ip: 192.168.1.91
+  children:
     dhcpclients:
       hosts: {}
       children:

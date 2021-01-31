@@ -1,0 +1,56 @@
+---
+- name: Install dnsmasq
+  apt:
+    name: "{{ packages }}"
+    state: present
+    # update_cache: yes
+  vars:
+    packages:
+      - dnsmasq
+      - dnsutils
+      - vim
+      - less
+
+- name: dnsmasq file
+  template:
+    src: dnsmasq.j2
+    dest: "/etc/dnsmasq.d/eth0"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload dnsmasq
+
+- name: Ensure dnsmasq is running
+  service:
+    name: dnsmasq
+    state: started
+
+- name: add a list of hosts to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ item['ip'] }}.*$"
+    line: "{{ item['ip'] }}\t\t{{ item['names'] | join(' ') }}"
+    state: present
+  with_items:
+  - ip: 1.2.3.4
+    names:
+    - server1
+  - ip: 4.5.6.7
+    names:
+    - server2a
+    - server2b
+  
+- name: Configure resolve.conf to use dnsmasq dns
+  lineinfile:
+    path: /etc/dhcp/dhclient.conf
+    regexp: "^prepend domain-name-servers.*;"
+    line: "prepend domain-name-servers {{ ip }};"
+    insertafter: "^#supersede domain-name .*;"
+
+- name: Network file
+  template:
+    src: eth0.j2
+    dest: /etc/network/interfaces.d/eth0
+    owner: root
+    group: root
+    mode: 0644
