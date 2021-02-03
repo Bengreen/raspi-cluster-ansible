@@ -13,15 +13,21 @@
 all:
   hosts:
     netman:
-      ip: 192.168.1.74
+      ip: 192.168.1.1
+      static_addr:
+        - name: DESKTOP-TSHUGCF
+          ip: 192.168.1.73
       static_ips:
-        - ip: 1.3.5.7
+        - ip: 192.168.1.254
           names:
-          - ben1
-          - ben2
-        - ip: 2.4.6.8
+          - plusnet
+        - ip: 192.168.1.2
           names:
-            ben3
+          - orbi
+          - orbilogin.com
+        - ip: 192.168.1.1
+          names:
+          - netman       
     dadspi:
       ip: 192.168.1.126
     samspi:

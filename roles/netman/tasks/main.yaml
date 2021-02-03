@@ -31,14 +31,14 @@
     regexp: "^{{ item['ip'] }}.*$"
     line: "{{ item['ip'] }}\t\t{{ item['names'] | join(' ') }}"
     state: present
-  with_items:
-  - ip: 1.2.3.4
-    names:
-    - server1
-  - ip: 4.5.6.7
-    names:
-    - server2a
-    - server2b
+  with_items: "{{ static_ips }}"
+  # - ip: 1.2.3.4
+  #   names:
+  #   - server1
+  # - ip: 4.5.6.7
+  #   names:
+  #   - server2a
+  #   - server2b
   
 - name: Configure resolve.conf to use dnsmasq dns
   lineinfile:
