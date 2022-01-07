@@ -1,0 +1,26 @@
+---
+- name: Install golang from remote
+  unarchive:
+    src: https://golang.org/dl/go{{ goVersion }}.linux-armv6l.tar.gz
+    dest: /usr/local
+    creates: /usr/local/go
+    remote_src: yes
+
+- name: bashrc.d dir
+  file:
+    path: /etc/bashrc.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Configure Golang path
+  template:
+    src: golang-j2.bash
+    dest: /etc/bashrc.d/golang.bash
+
+- name: bash.bashrc support for bashrc.d dir
+  lineinfile:
+    path: /etc/bash.bashrc
+    line: "for i in /etc/bashrc.d/*.sh /etc/bashrc.d/*.bash; do [ -r \"$i\" ] && . $i; done; unset i"
+    insertafter: EOF

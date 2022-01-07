@@ -1,0 +1,28 @@
+# Create install for ClusterCtrl
+---
+- name: udev rules
+  copy:
+    src: clusterhat-image/files/etc/udev/rules.d/90-clusterctrl.rules
+    dest: /etc/udev/rules.d/
+    # owner: root
+    # group: root
+    # mode: 0644
+
+- name: clusterctrl config
+  copy:
+    src: clusterhat-image/files/usr/share/clusterctrl/default-clusterctrl
+    dest: /etc/default/clusterctrl
+    force: no
+
+- name: clusterctrl config
+  lineinfile:
+    path: /etc/default/clusterctrl
+    regexp: '^TYPE=*'
+    line: "TYPE=c"
+    insertbefore: EOF
+
+- name: clusterctrl command
+  copy:
+    src: clusterhat-image/files/usr/sbin/clusterctrl
+    dest: /opt/gateway/venv/bin/
+    mode: 755

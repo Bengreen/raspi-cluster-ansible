@@ -9,6 +9,7 @@
       - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
   roles:
+    - clusterctrl
     - pyfan
     - vlan
     - dnsmasq
@@ -18,7 +19,6 @@
     - gatewayserver
     - docker
     - docker-registry
-    - firmware
+    # - firmware
     - role: k8s-utils
       tags: k8s
-

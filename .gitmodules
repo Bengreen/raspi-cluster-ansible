@@ -1,3 +1,6 @@
 [submodule "roles/pyfan/files/pyfan"]
 	path = roles/pyfan/files/pyfan
 	url = https://github.com/Bengreen/pi-fan-controller.git
+[submodule "roles/clusterctrl/files/clusterhat-image"]
+	path = roles/clusterctrl/files/clusterhat-image
+	url = https://github.com/burtyb/clusterhat-image.git

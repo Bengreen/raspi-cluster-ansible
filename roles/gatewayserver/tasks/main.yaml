@@ -2,7 +2,7 @@
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
-    imageName: DietPi_RPi-ARMv6-Buster.7z
+    imageName: DietPi_RPi-ARMv7-Bullseye.7z
     tftpDir: /tftpboot
 
 - name: Ensure group "gateway" exists
@@ -65,4 +65,3 @@
   systemd:
     name: gateway
     enabled: yes
-

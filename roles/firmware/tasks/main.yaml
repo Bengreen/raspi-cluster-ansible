@@ -1,27 +1,14 @@
-- name: Set firmware version
-  set_fact:
-    firmwareVersion: "2020-09-03"
 
 - name: Copy Firmware config
   copy:
     src: files/bootconf.txt
     dest: /etc/default/bootconf.txt
 
-- name: Configure stable eeprom channel
-  copy:
-    src: files/rpi-eeprom-update
-    dest: /etc/default/rpi-eeprom-update
-  notify: Restart rpi-eeprom-update
+# - name: Configure stable eeprom channel
+#   copy:
+#     src: files/rpi-eeprom-update
+#     dest: /etc/default/rpi-eeprom-update
+#   notify: Restart rpi-eeprom-update
 
-- name: Create firmware
-  command: "rpi-eeprom-config --config /etc/default/bootconf.txt --out /lib/firmware/raspberrypi/bootloader/pieeprom-{{ firmwareVersion }}-net.bin /lib/firmware/raspberrypi/bootloader/stable/pieeprom-{{ firmwareVersion }}.bin"
-
-
-- name: Copy commit ref to file
-  copy:
-    content: "rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/pieeprom-{{ firmwareVersion }}-net.bin"
-    dest: /root/configFirmware
-
-- name: Install firmware
-  command: "echo rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/pieeprom-{{ firmwareVersion }}-net.bin"
-
+- name: Update firmware config
+  command: rpi-eeprom-config --apply /etc/default/bootconf.txt
