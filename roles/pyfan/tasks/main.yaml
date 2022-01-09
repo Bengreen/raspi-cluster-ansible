@@ -16,6 +16,7 @@
   vars:
     packages:
     - python3-pip
+    - python3-dev
     - python-setuptools # Needed for ansible to switch to python3
     - virtualenv
 
@@ -29,7 +30,7 @@
   pip:
     name: "{{ targetDir }}/pyfan"
     virtualenv: "{{ targetDir }}/venv"
-    virtualenv_python: python3.7
+    virtualenv_python: python3.9
 
 - name: PyFan Systemd
   copy:

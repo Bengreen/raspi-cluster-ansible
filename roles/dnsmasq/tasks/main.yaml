@@ -21,6 +21,13 @@
     group: tftpwrite
   register: tftpbootDir
 
+- name: Update of /tftpboot dir
+  ansible.builtin.debug:
+    msg: tftpbbot dir {{ tftpbootDir }}
+
+# - name: End the play to debug
+#   meta: end_host
+
 - name: populate tftpboot
   copy:
     src: /boot/

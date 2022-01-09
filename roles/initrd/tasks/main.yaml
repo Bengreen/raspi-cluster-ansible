@@ -57,8 +57,8 @@
     #     chmod +x init download.sh
     #     mkdir -p dev bin sbin etc tmp proc sys usr/bin usr/sbin var/run var/lib/dhcp usr/lib/arm-linux-gnueabihf lib/arm-linux-gnueabihf
     #     cp /bin/busybox bin/
-   
-    #     chmod +x etc/network/if-down.d/* etc/network/if-up.d/* etc/network/if-pre-up.d/* etc/network/if-post-down.d/* 
+
+    #     chmod +x etc/network/if-down.d/* etc/network/if-up.d/* etc/network/if-pre-up.d/* etc/network/if-post-down.d/*
     #     chmod +x etc/udhcpc/default.script
 
     #     # Network dependencies
@@ -79,7 +79,7 @@
     #     cp /lib/arm-linux-gnueabihf/libpthread.so.0 lib/arm-linux-gnueabihf/
     #     cp /usr/lib/arm-linux-gnueabihf/libstdc++.so.6 usr/lib/arm-linux-gnueabihf/
     #     cp /lib/arm-linux-gnueabihf/libgcc_s.so.1 usr/lib/arm-linux-gnueabihf/
-        
+
     #     cp /bin/nc bin/
 
     #     mknod dev/mmcblk0 b 179 0
@@ -120,6 +120,12 @@
 
 - name: Copy standard filesystem
   copy:
-    src: "{{ tftpDir }}/start4.elf"
+    src: "{{ tftpDir }}/{{ item }}"
     dest: "{{ tftpDir }}/imager/"
     remote_src: yes
+  loop:
+    - start4.elf
+    - start4cd.elf
+    - fixup4cd.dat
+    - kernel7l.img
+    - bcm2711-rpi-4-b.dtb

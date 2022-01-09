@@ -54,7 +54,7 @@
   pip:
     name: "{{ targetDir }}/python"
     virtualenv: "{{ targetDir }}/venv"
-    virtualenv_python: python3.7
+    virtualenv_python: python3.9
 
 - name: Gateway Systemd
   copy:
