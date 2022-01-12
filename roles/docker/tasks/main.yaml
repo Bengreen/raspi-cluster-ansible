@@ -13,11 +13,8 @@
 
 - name: Install Docker
   apt:
-    name: "{{packages}}"
+    name: "docker-ce={{docker_version}}"
     update_cache: yes
-  vars:
-    packages:
-    - docker-ce={{docker_version}}
 
 - name: Create user and add to wheel and docker
   user:
@@ -44,8 +41,8 @@
     mode: '0644'
   register: dockerDaemonFile
 
-- name: Create Docker systemd file 
-  file: 
+- name: Create Docker systemd file
+  file:
     path: /etc/systemd/system/docker.service.d
     state: directory
     mode: '0755'

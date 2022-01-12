@@ -4,10 +4,13 @@
     state: directory
     path: "/home/{{ k8sAdminUser }}/.kube"
 
+- debug:
+    msg: "{{ hostvars }}"
+
 - name: kubeconfig file
-  copy:    
+  copy:
     dest: "/home/{{ k8sAdminUser }}/.kube/config"
-    content: "{{ hostvars['k8s100']['kubeconfig'] }}"
+    content: "{{ hostvars['k8s100.k8s']['kubeconfig'] }}"
     owner: "{{ k8sAdminUser }}"
     group: "{{ k8sAdminUser }}"
     mode: '0640'

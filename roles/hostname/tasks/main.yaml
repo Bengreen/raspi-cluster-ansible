@@ -2,14 +2,14 @@
 
 - name: Install hostname packages
   apt:
-    name: "{{ packages }}"
+    name: dbus
     state: present
-    # update_cache: yes
-  vars:
-    packages:
-    - dbus
+
+- name: Start service dbus, if not started
+  ansible.builtin.service:
+    name: dbus
+    state: started
 
 - name: Set name of host
-  hostname: 
+  hostname:
     name: "{{ inventory_hostname }}"
-

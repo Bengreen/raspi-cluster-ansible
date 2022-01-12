@@ -2,7 +2,9 @@
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
-    imageName: DietPi_RPi-ARMv7-Bullseye.7z
+    images:
+      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv7-Bullseye.7z
+      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.7z
     tftpDir: /tftpboot
 
 - name: Ensure group "gateway" exists
@@ -30,8 +32,9 @@
 
 - name: download os image
   get_url:
-    url: "https://dietpi.com/downloads/images/{{ imageName }}"
-    dest: "{{ targetDir }}/images/{{ imageName }}"
+    url: "{{ item }}"
+    dest: "{{ targetDir }}/images/{{ item | basename }}"
+  loop: "{{ images }}"
 
 - name: Python venv tools
   apt:

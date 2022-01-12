@@ -13,28 +13,23 @@
   roles:
   # - users
   # - k8s-all
-- hosts: k8s100
+- hosts: k8s100.k8s
   vars:
+    kubeAdmReset: true
     k8sAdminUser: k8sadmin
   roles:
   - k8s-master
   - k8s-user
-- hosts: k8s102
+- hosts: k8s102.k8s
+  vars:
+    kubeAdmReset: true
   roles:
   - k8s-worker
-- hosts: k8s101
+- hosts: k8s101.k8s
+  vars:
+    kubeAdmReset: true
   roles:
   - k8s-worker
-    #- example
-    # - nfs-server
-    # - vlan
-    # - dnsmasq
-    # - router
-    #- initrd
-    # - piCore
-    # - dietpiclient
-    # - gatewayserver
-    # - firmware
 - hosts: gateway
   vars:
     ansible_user: ansible
