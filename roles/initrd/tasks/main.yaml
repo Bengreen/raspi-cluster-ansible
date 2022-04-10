@@ -120,7 +120,7 @@
 
 - name: Copy standard filesystem
   copy:
-    src: "{{ tftpDir }}/{{ item }}"
+    src: "/boot/{{ item }}"
     dest: "{{ tftpDir }}/imager/"
     remote_src: yes
   loop:

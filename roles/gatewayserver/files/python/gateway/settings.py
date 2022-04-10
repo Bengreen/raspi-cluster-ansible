@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     auth_key = 'RlWPSxCDUDILOevgHp2Z-qu3anE8YKmpszZJUz9lLFs='
     cookie_name = 'testme'
     imageDir = '/opt/gateway/images'
-    defaultImage = 'DietPi_RPi-ARMv7-Bullseye.7z'
+    defaultImage = 'DietPi_RPi-ARMv8-Bullseye.7z'
     tftpDir = '/tftpboot'
     HOST: IPv4Address = "0.0.0.0"
     PORT: int = "8080"

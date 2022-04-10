@@ -1,6 +1,6 @@
 cni: flannel
 metallb:
-  version: v0.11.0
+  version: v0.12.1
   config:
     apiVersion: v1
     kind: ConfigMap

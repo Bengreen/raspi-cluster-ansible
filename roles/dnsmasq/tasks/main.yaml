@@ -1,8 +1,4 @@
 ---
-- name: tftpwrite group
-  group:
-    name: tftpwrite
-    state: present
 
 - name: Install dnsmasq
   apt:
@@ -13,27 +9,10 @@
     packages:
       - dnsmasq
 
-- name: tftpboot dir
-  file:
-    path: /tftpboot
-    state: directory
-    mode: "0755"
-    group: tftpwrite
-  register: tftpbootDir
-
-- name: Update of /tftpboot dir
-  ansible.builtin.debug:
-    msg: tftpbbot dir {{ tftpbootDir }}
 
 # - name: End the play to debug
 #   meta: end_host
 
-- name: populate tftpboot
-  copy:
-    src: /boot/
-    dest: /tftpboot
-    mode: preserve
-  when: tftpbootDir.changed
 
 - name: dnsmasq file
   template:

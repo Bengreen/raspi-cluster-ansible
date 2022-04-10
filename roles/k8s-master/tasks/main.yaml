@@ -21,7 +21,7 @@
     file:
       state: absent
       path: /etc/cni/net.d
-  
+
   - name: reset iptables
     command:
       cmd: "{{ item }}"
@@ -44,7 +44,7 @@
       - iptables-legacy -X
 
   - name: init kubeadm
-    command: kubeadm init  --pod-network-cidr "10.244.0.0/16"  --apiserver-cert-extra-sans=192.168.1.100
+    command: kubeadm init --pod-network-cidr "10.244.0.0/16"  --apiserver-cert-extra-sans=192.168.1.100
   when: kubeAdmReset
 
 - name: Setp bridge forwarding
@@ -121,7 +121,7 @@
 
   - name: Install Secret
     command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
-  
+
   - name: Install Config
     command:
       cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -

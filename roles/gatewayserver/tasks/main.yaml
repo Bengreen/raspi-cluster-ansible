@@ -3,9 +3,27 @@
   set_fact:
     targetDir: /opt/gateway
     images:
-      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv7-Bullseye.7z
+      # - https://dietpi.com/downloads/images/DietPi_RPi-ARMv7-Bullseye.7z
       - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.7z
     tftpDir: /tftpboot
+- set_fact:
+    mountImageName: "{{ (images[0] | basename).split('.') | first }}"
+
+- debug:
+    msg: "mountImageName is {{ mountImageName }}"
+
+- name: Install rsync
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - rsync
+
+- name: Update of /tftpboot dir
+  ansible.builtin.debug:
+    msg: tftpbbot dir {{ tftpDir }}
 
 - name: Ensure group "gateway" exists
   group:
@@ -21,8 +39,10 @@
 - name: Provide gateway with rw access to tftpboot
   file:
     path: "{{ tftpDir }}"
+    state: directory
     group: gateway
     mode: '0775'
+  register: tftpbootDir
 
 - name: images
   file:
@@ -35,6 +55,62 @@
     url: "{{ item }}"
     dest: "{{ targetDir }}/images/{{ item | basename }}"
   loop: "{{ images }}"
+
+- name: unpack images
+  command:
+    chdir: "{{ targetDir }}/images"
+    cmd: "p7zip -d -f -k {{ item | basename }}"
+    creates: "{{ targetDir }}/images/{{ item | basename }}.img"
+  loop: "{{ images }}"
+
+- name: Mount point for partition 1
+  file:
+    path: "{{ targetDir }}/images/{{ mountImageName }}"
+    state: directory
+    mode: '0755'
+
+- name: unmount parition 1 - clear before start
+  mount:
+    path: "{{ targetDir }}/images/{{ mountImageName }}"
+    state: absent
+
+# - name: delete losetup
+#   command: losetup -d /dev/loop0
+
+- name: losetup
+  command:
+    cmd: "losetup -P /dev/loop0 {{ targetDir }}/images/{{ mountImageName }}.img"
+    creates: /dev/loop0p1
+
+- name: Mount partition 1
+  mount:
+    path: "{{ targetDir }}/images/{{ mountImageName }}"
+    src: /dev/loop0p1
+    fstype: vfat
+    state: mounted
+
+# - name: End the play to debug
+#   meta: end_host
+
+- name: Synchronize two directories on one remote host.
+  synchronize:
+    src: "{{ targetDir }}/images/{{ mountImageName }}/"
+    dest: "{{ tftpDir }}"
+    group: false
+    perms: false
+  delegate_to: "{{ inventory_hostname }}"
+
+
+# - name: End the play to debug
+#   meta: end_host
+
+- name: unmount parition 1
+  mount:
+    path: "{{ targetDir }}/images/{{ mountImageName }}"
+    state: absent
+
+- name: delete losetup
+  command: losetup -d /dev/loop0
 
 - name: Python venv tools
   apt:

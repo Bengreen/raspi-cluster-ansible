@@ -1,4 +1,4 @@
-# Initial Gateway setup 
+# Initial Gateway setup
 
 From an empty system install the following onto gateway:
 
@@ -16,6 +16,36 @@ From an empty system install the following onto gateway:
     ansible-playbook ansible-initial-config.yaml -l gateway -kKb
 
     ansible-playbook gateway.yaml
+
+# Clear SSH certs from existing nodes
+
+
+    #!/bin/bash
+    ssh-keygen -R k8s100
+    ssh-keygen -R k8s100.k8s
+    ssh-keygen -R 192.168.2.100
+    ssh-keygen -R k8s101
+    ssh-keygen -R k8s101.k8s
+    ssh-keygen -R 192.168.2.101
+    ssh-keygen -R k8s102
+    ssh-keygen -R k8s102.k8s
+    ssh-keygen -R 192.168.2.102
+
+    ssh-keyscan -H k8s100 >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s100.k8s >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s101 >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s101.k8s >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s102 >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s102.k8s >>~/.ssh/known_hosts
+
+    ssh dietpi@k8s100
+    ssh dietpi@k8s101
+    ssh dietpi@k8s102
+
+    #ssh -o 'StrictHostKeyChecking no' dietpi@k8s100 cat /etc/ssh/ssh_host_rsa_key.pub >>~/.ssh/known_hosts
+    #ssh -o 'StrictHostKeyChecking no' dietpi@k8s101 cat /etc/ssh/ssh_host_rsa_key.pub >>~/.ssh/known_hosts
+    #ssh -o 'StrictHostKeyChecking no' dietpi@k8s102 cat /etc/ssh/ssh_host_rsa_key.pub >>~/.ssh/known_hosts
+
 
 # Add Clients
 
