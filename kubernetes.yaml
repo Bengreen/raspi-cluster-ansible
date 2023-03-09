@@ -20,12 +20,17 @@
   roles:
   - k8s-master
   - k8s-user
+- hosts: k8s101.k8s
+  vars:
+    kubeAdmReset: true
+  roles:
+  - k8s-worker
 - hosts: k8s102.k8s
   vars:
     kubeAdmReset: true
   roles:
   - k8s-worker
-- hosts: k8s101.k8s
+- hosts: k8s103.k8s
   vars:
     kubeAdmReset: true
   roles:
