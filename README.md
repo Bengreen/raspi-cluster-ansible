@@ -4,7 +4,7 @@ From an empty system install the following onto gateway:
 
     apt install ansible ssh-askpass git tmux
     git clone https://github.com/Bengreen/raspi-cluster-ansible.git
-    git submodule --init update
+    git submodule update --init --recursive
 
     git config --global user.name "Ben Greene"
     git config --global user.email "BenJGreene@gmail.com"
@@ -12,7 +12,7 @@ From an empty system install the following onto gateway:
     ssh-keygen
     ssh ben.greene@192.168.1.140
 
-    ansible gateway -m ping -u ben.greene -k
+    ansible gateway -m ping -u dietpi -k
     ansible-playbook ansible-initial-config.yaml -l gateway -kKb
 
     ansible-playbook gateway.yaml
