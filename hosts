@@ -7,8 +7,10 @@ all:
       static_addr:
         - name: DESKTOP-TSHUGCF
           ip: 192.168.1.73
+          custom_tag: ""
         - name: gateway
           ip: 192.168.1.100
+          custom_tag: set:gwrouting
       static_ips:
         - ip: 192.168.1.254
           names:
