@@ -127,5 +127,5 @@
     - start4.elf
     - start4cd.elf
     - fixup4cd.dat
-    - kernel7l.img
+    - kernel8.img
     - bcm2711-rpi-4-b.dtb

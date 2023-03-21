@@ -17,6 +17,18 @@ From an empty system install the following onto gateway:
 
     ansible-playbook gateway.yaml
 
+# Reinistall Servers
+
+    MAC addreses: dc:a6:32:6f:e6:6e dc:a6:32:55:76:33 dc:a6:32:48:4c:eb e4:5f:01:c3:04:44
+
+    BUT we need serial numbers for RPI booting
+
+    for mac in ; do
+        gateway imaging create ${mac//:/}
+    done
+    gateway imaging get
+
+
 # Clear SSH certs from existing nodes
 
 
@@ -30,6 +42,8 @@ From an empty system install the following onto gateway:
     ssh-keygen -R k8s102
     ssh-keygen -R k8s102.k8s
     ssh-keygen -R 192.168.2.102
+    ssh-keygen -R k8s103.k8s
+    ssh-keygen -R 192.168.2.103
 
     ssh-keyscan -H k8s100 >>~/.ssh/known_hosts
     ssh-keyscan -H k8s100.k8s >>~/.ssh/known_hosts
@@ -37,10 +51,13 @@ From an empty system install the following onto gateway:
     ssh-keyscan -H k8s101.k8s >>~/.ssh/known_hosts
     ssh-keyscan -H k8s102 >>~/.ssh/known_hosts
     ssh-keyscan -H k8s102.k8s >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s103 >>~/.ssh/known_hosts
+    ssh-keyscan -H k8s103.k8s >>~/.ssh/known_hosts
 
     ssh dietpi@k8s100
     ssh dietpi@k8s101
     ssh dietpi@k8s102
+    ssh dietpi@k8s103
 
     #ssh -o 'StrictHostKeyChecking no' dietpi@k8s100 cat /etc/ssh/ssh_host_rsa_key.pub >>~/.ssh/known_hosts
     #ssh -o 'StrictHostKeyChecking no' dietpi@k8s101 cat /etc/ssh/ssh_host_rsa_key.pub >>~/.ssh/known_hosts
