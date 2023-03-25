@@ -1,4 +1,4 @@
 ---
 dependencies:
-  - docker
-  - k8s-utils
+  - k8s-dependencies
+  - k8s-base

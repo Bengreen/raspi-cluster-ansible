@@ -4,22 +4,13 @@
 #
 # - debug: var=ansible_facts
 
-- name: Add Kubernetes GPG key
-  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
-
-- name: Add Kubernetes APT repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-
-- name: Install Kubernetes
+- name: Install kubectl
   apt:
     name: "{{ packages }}"
     update_cache: yes
     state: present
   vars:
     packages:
-    - kubelet={{ kubernetes_version }}
-    - kubeadm={{ kubernetes_version }}
     - kubectl={{ kubernetes_version }}
 
 - name: Helm Dirs
@@ -30,7 +21,7 @@
 
 - name: Install Helm
   unarchive:
-    src: https://get.helm.sh/helm-v3.3.4-linux-arm.tar.gz
+    src: https://get.helm.sh/helm-v3.11.2-linux-arm.tar.gz
     dest: /opt/helm/
     remote_src: yes
     creates: /opt/helm/linux-arm/helm

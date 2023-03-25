@@ -1,5 +1,9 @@
 # Create install for ClusterCtrl
 ---
+- name: Set Config
+  set_fact:
+    targetDir: /opt/pyfan
+
 - name: udev rules
   copy:
     src: clusterhat-image/files/etc/udev/rules.d/90-clusterctrl.rules
@@ -21,8 +25,15 @@
     line: "TYPE=c"
     insertbefore: EOF
 
+- name: Install smbus2
+  pip:
+    name: smbus2
+    virtualenv: "{{ targetDir }}/venv"
+    virtualenv_python: python3.9
+
+
 - name: clusterctrl command
   copy:
     src: clusterhat-image/files/usr/sbin/clusterctrl
     dest: /opt/gateway/venv/bin/
-    mode: 755
+    mode: 775

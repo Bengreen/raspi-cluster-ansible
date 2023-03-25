@@ -1,36 +1,18 @@
 ---
 - hosts: k8s
-  vars:
-    kubeAdmReset: false
-    # k8sAdminUser: k8sadmin
-    # ansible_user: ansible
-    # ansible_become: yes
-    # vlan_interface: eth0
-    # vlan_tag: "3"
-    # nfs_exports:
-    #   - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
-    #   - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
+  vars: []
   roles:
-  # - users
-  # - k8s-all
-- hosts: k8s100.k8s
+  - k8s-dependencies
+  - hostname
+  - pyfan
+- hosts: k8smaster
   vars:
     kubeAdmReset: true
     k8sAdminUser: k8sadmin
   roles:
   - k8s-master
   - k8s-user
-- hosts: k8s101.k8s
-  vars:
-    kubeAdmReset: true
-  roles:
-  - k8s-worker
-- hosts: k8s102.k8s
-  vars:
-    kubeAdmReset: true
-  roles:
-  - k8s-worker
-- hosts: k8s103.k8s
+- hosts: k8sworker
   vars:
     kubeAdmReset: true
   roles:

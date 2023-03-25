@@ -2,9 +2,9 @@
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
-    images:
-      # - https://dietpi.com/downloads/images/DietPi_RPi-ARMv7-Bullseye.7z
+    ls:
       - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.7z
+      - https://dietpi.com/downloads/images/DietPi_NativePC-BIOS-x86_64-Bullseye.7z
     tftpDir: /tftpboot
 - set_fact:
     mountImageName: "{{ (images[0] | basename).split('.') | first }}"
@@ -34,7 +34,7 @@
   user:
     name: gateway
     shell: /usr/sbin/nologin
-    groups: gateway,tftpwrite
+    groups: gateway
 
 - name: Provide gateway with rw access to tftpboot
   file:
@@ -92,9 +92,18 @@
 # - name: End the play to debug
 #   meta: end_host
 
+
+# - name: Synchronize two directories on one remote host.
+#   synchronize:
+#     src: "{{ targetDir }}/images/{{ mountImageName }}/"
+#     dest: "{{ tftpDir }}"
+#     group: false
+#     perms: false
+#   delegate_to: "{{ inventory_hostname }}"
+
 - name: Synchronize two directories on one remote host.
   synchronize:
-    src: "{{ targetDir }}/images/{{ mountImageName }}/"
+    src: "/boot/"
     dest: "{{ tftpDir }}"
     group: false
     perms: false

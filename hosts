@@ -27,26 +27,35 @@ all:
     samspi:
       ip: 192.168.1.91
   children:
-    dhcpclients:
-      hosts: {}
+    k8s:
+      vars:
+        ansible_user: ansible
+        ansible_become: yes
+        kubernetes_version: "1.26.3-00"
       children:
-        k8s:
-          vars:
-            ansible_user: ansible
-            ansible_become: yes
+        k8smaster:
           hosts:
             k8s100.k8s:
               ip: 192.168.2.100
-              mac: dc:a6:32:6f:e6:6e
+              mac: dc:a6:32:b8:8b:c2
+              serial: 614aa1e0
+        k8sworker:
+          hosts:
             k8s101.k8s:
               ip: 192.168.2.101
               mac: dc:a6:32:55:76:33
+              serial: 054f967f
             k8s102.k8s:
               ip: 192.168.2.102
               mac: dc:a6:32:48:4c:eb
+              serial: 6d646ef9
             k8s103.k8s:
               ip: 192.168.2.103
               mac: e4:5f:01:c3:04:44
+              serial: 6910acfb
+            k8s103.k8s:
+              ip: 192.168.2.104
+              mac: 18:03:73:25:75:a4
     gateway:
       hosts:
         192.168.1.100:

@@ -11,7 +11,7 @@
   authorized_key:
     user: ansible
     state: present
-    key: "{{ lookup('file', '/home/ben.greene/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '/home/dietpi/.ssh/id_rsa.pub') }}"
 
 - name: ssh config
   template:

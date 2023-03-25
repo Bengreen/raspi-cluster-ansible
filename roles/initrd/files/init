@@ -16,7 +16,28 @@ echo "This script just mounts and boots the rootfs, nothing else!"
 hostname imager
 
 ifup lo
-ifup eth0
+
+attempts=5
+
+while [ $attempts -gt 0 ]; do
+  if ifup eth0 ; then
+        echo "eth0 interface successfully brought up."
+        break
+    else
+        echo "eth0 interface not yet up. Trying again in 5 seconds..."
+        sleep 5
+        attempts=$((attempts-1))
+    fi
+done
+
+if [ $attempts -eq 0 ]; then
+    echo "Maximum number of attempts reached. Unable to bring up eth0 interface."
+    echo "Rebooting in 10 secs ..."
+    sleep 10
+    reboot -f
+fi
+
+
 
 echo IP
 ip addr
@@ -38,10 +59,8 @@ else
   sleep 10
 fi
 
-echo Rebooting....
+echo Rebooting in 5 secs ....
 sleep 5
 reboot -f
 
 #/bin/busybox sh
-
-

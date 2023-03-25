@@ -79,7 +79,7 @@ class Imaging(web.View):
             print("return info on a single imaging dir : %s" % (serialNumber))
             return web.json_response({"created": serialNumber})
         else:
-            currentImaging = [basename(image) for image in 
+            currentImaging = [basename(image) for image in
                 glob.glob(self.request.app["settings"].tftpDir+
                 '/[A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9][A-Fa-f0-9]')]
 
@@ -88,7 +88,7 @@ class Imaging(web.View):
         if 'serialNumber' not in self.request.match_info:
             print("serialNumber must be provided")
             return web.json_response({"delete": False})
-        
+
         serialNumber = self.request.match_info['serialNumber']
         filename = os.path.join(self.request.app["settings"].tftpDir, serialNumber)
         if not os.path.islink(filename):
@@ -103,7 +103,7 @@ class Imaging(web.View):
         if 'filename' in self.request.match_info:
             print("cannot POST to an imaging record")
             return web.json_response({"post": False})
-        
+
         serialNumber = (await self.request.json())["serialNumber"]
         filename = os.path.join(self.request.app["settings"].tftpDir, serialNumber)
         if os.path.exists(filename):
@@ -120,6 +120,7 @@ class InstallConfig(web.View):
         name = self.request.match_info['name']
         context = {
             "password": "archive1",
+            "pubkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDNBN4PN8uHHqQP713Um1Sn//ebLNWkuvvBP1XpIV9p2lX1Jvtx7Iqy5aLxVl5pYzd/gzcA4zJ6od5MjfoCHSVgRORcWSlLz9th2Y3WwdM5aDuKqV8fNtffJqHeo8ynlEpCw5kVSeo881wxQV3SsbyHdlubsLCOsPOi58jtnYIbspLaxx6Mpmv7aab7Bn3F1pfHPbI93yT93NA74xwLCm0vQ1tHWJShGk6zdT4ZltF7Uu+TEaXGIV6DYsd9wjzLdCOUyiBmzd7jGMNFA/wHIjMzGqQGNUe0RTWIHlZeImRIIVX20Ff++PiP5Qp2JW2ahAXb4bb2ZJDh7VaYMmz0FTlXQ0Bi7f1HnCKBmvvRJYwTbwMAZWr7pfXha5QJpbsBbxa5qBhydoYOYc9CN/wkLtlVBHL9i8W/LY5TjxAf/einPlOpl/9rAdOd1tsVVqsad2ckpThjq5gqBIahRyTOkX/4DvR5IkpQu4AskA2EhGpzIyJuyisGFb8usXHRNCFX4p0= dietpi@gateway",
             "hostname": "k8s%02d" % (int(self.request.remote.split(".")[3])),
         }
         return aiohttp_jinja2.render_template('dietpi-j2.txt',
@@ -148,4 +149,3 @@ class PostInstallConfig(web.View):
 class Alive(web.View):
     async def get(self):
         return web.json_response({"alive": True})
-

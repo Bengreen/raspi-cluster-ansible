@@ -1,5 +1,3 @@
 ---
 dependencies:
   - k8s-dependencies
-  - k8s-base
-  - k8s-utils

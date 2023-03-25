@@ -13,7 +13,7 @@ sync
 partprobe /dev/mmcblk0
 
 fdisk -l
-#sh
+
 mount /dev/mmcblk0p1 bootconfig
 
 wget http://${HOST}:${PORT}/config/${SERIALNUMBER} -O bootconfig/dietpi.txt
@@ -32,4 +32,3 @@ BODY=""
 BODY_LEN=$( echo -n "${BODY}" | wc -c )
 echo -ne "DELETE ${HTTP_PATH} HTTP/1.0\r\nHost: ${HOST}\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: ${BODY_LEN}\r\n\r\n${BODY}" | \
   nc -i 3 ${HOST} ${PORT}
-

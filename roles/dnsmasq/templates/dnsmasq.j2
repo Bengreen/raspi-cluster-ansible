@@ -11,3 +11,12 @@ pxe-service=0,"Raspberry Pi Boot"
 {% for host in groups['k8s'] %}
 dhcp-host={{ hostvars[host].mac }},{{ hostvars[host].ip }}
 {% endfor %}
+
+
+dhcp-userclass=set:ENH,iPXE
+
+# if request comes from dumb firmware, send them iPXE (via TFTP)
+dhcp-boot=tag:!ENH,undionly.kpxe,192.168.2.1
+
+# if request comes from iPXE, direct it to boot from boot1.txt
+dhcp-boot=tag:ENH,http://192.168.2.1/boot1.txt

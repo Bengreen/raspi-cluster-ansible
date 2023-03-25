@@ -1,62 +1,16 @@
 ---
-- name: Clear Kube
-  block:
-  - name: Stop kubelet
-    systemd:
-      state: stopped
-      name: kubelet
-
-  - name: Clear cni network
-    command: ip link delete cni0
-    ignore_errors: yes
-
-  - name: Clear flannel network
-    command: ip link delete flannel.1
-    ignore_errors: yes
-
-  - name: kubeadm reset
-    command: kubeadm reset -f
-
-  - name: Clear CNI
-    file:
-      state: absent
-      path: /etc/cni/net.d
-
-  - name: reset iptables
-    command:
-      cmd: "{{ item }}"
-    with_items:
-      - iptables -P INPUT ACCEPT
-      - iptables -P FORWARD ACCEPT
-      - iptables -P OUTPUT ACCEPT
-      - iptables-legacy -P INPUT ACCEPT
-      - iptables-legacy -P FORWARD ACCEPT
-      - iptables-legacy -P OUTPUT ACCEPT
-      - iptables -Z
-      - iptables -F
-      - iptables -t nat -F
-      - iptables -t mangle -F
-      - iptables -X
-      - iptables-legacy -Z
-      - iptables-legacy -F
-      - iptables-legacy -t nat -F
-      - iptables-legacy -t mangle -F
-      - iptables-legacy -X
-
-  - name: init kubeadm
-    command: kubeadm init --pod-network-cidr "10.244.0.0/16"  --apiserver-cert-extra-sans=192.168.1.100
+- name: init kubeadm
+  command: kubeadm init --pod-network-cidr "10.244.0.0/16"  --apiserver-cert-extra-sans=192.168.1.100
   when: kubeAdmReset
-
-- name: Setp bridge forwarding
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: '1'
-    state: present
 
 - name: Get master token
   # command: kubeadm token create # --print-join-command
   command: kubeadm --kubeconfig /etc/kubernetes/admin.conf token list -o jsonpath='{.token}'
   register: k8sMasterToken
+  until: "k8sMasterToken is not failed"
+  retries: 20
+  delay: 10
+
 
 - name: Get master CA
   shell: |
@@ -97,14 +51,14 @@
   when: cni == 'weave'
 
 - name: Flannel CNI
-  command: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  command: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
   when: cni == 'flannel'
 
 
 - name: Metallb
   block:
-  - name: Create namespace
-    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/manifests/namespace.yaml"
+  # - name: Create namespace
+  #   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
 
   - name: Set kube-proxy strictARP
     shell: >-
@@ -113,7 +67,7 @@
       kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f - -n kube-system
 
   - name: Install
-    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/manifests/metallb.yaml"
+    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
 
   - name: Create Secret
     command: openssl rand -base64 128
@@ -122,10 +76,10 @@
   - name: Install Secret
     command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
 
-  - name: Install Config
+  - name: Install CRDs
     command:
       cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
-      stdin: "{{ metallb.config | to_nice_yaml(indent=2) }}"
+      stdin: "{{ metallb.crd | to_nice_yaml(indent=2) }}"
 
 - name: Traefik
   block:
@@ -136,7 +90,7 @@
       - helm repo add traefik https://helm.traefik.io/traefik
       - helm repo update
       - helm --kubeconfig /etc/kubernetes/admin.conf -n traefik-system upgrade -i traefik traefik/traefik
-  - name: Traefix dashboard
+  - name: Traefik dashboard
     command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n traefik-system apply -f -
     args:
       stdin: "{{ traefik.config | to_nice_yaml(indent=2) }}"

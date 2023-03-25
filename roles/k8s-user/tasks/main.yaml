@@ -1,11 +1,22 @@
 ---
+
+- name: Create user and add to wheel and docker
+  user:
+    name: "{{ k8sAdminUser }}"
+    groups:
+    - wheel
+    append: yes
+    state: present
+    createhome: yes
+
+
 - name: kubeconfig dir
   file:
     state: directory
     path: "/home/{{ k8sAdminUser }}/.kube"
 
-- debug:
-    msg: "{{ hostvars }}"
+# - debug:
+#     msg: "{{ hostvars }}"
 
 - name: kubeconfig file
   copy:

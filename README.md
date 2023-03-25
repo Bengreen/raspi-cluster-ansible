@@ -17,14 +17,40 @@ From an empty system install the following onto gateway:
 
     ansible-playbook gateway.yaml
 
+
+    apt install dnsutils less net-tools
+
+    Update routing rules:
+
+        route add -net 192.168.2.0/24 gw 192.168.2.1
+        route del -net 192.168.2.0/24 gw 192.168.1.100
+        route del -net 192.168.2.0/24 gw 0.0.0.0
+        route -n
+
+# Read this guide
+
+https://medium.com/karlmax-berlin/how-to-install-kubernetes-on-raspberry-pi-53b4ce300b58
+or via k3s
+https://anthonynsimon.com/blog/kubernetes-cluster-raspberry-pi/
+
+# Traefik Route forwarding
+
+Add Metallb to the deployment. And configure it to use IPAddressPool and L2Advertisement
+Then add a route from the dns name to the IP Address allocated for the Ingress (eg Traefik)
+
+Then check the configuration of Traefik LoadBalancer to confirm it is got the annotation pointing to the default IP Pool
+
+    metallb.universe.tf/ip-allocated-from-pool: default
+
+
 # Reinistall Servers
 
     MAC addreses: dc:a6:32:6f:e6:6e dc:a6:32:55:76:33 dc:a6:32:48:4c:eb e4:5f:01:c3:04:44
 
     BUT we need serial numbers for RPI booting
 
-    for mac in ; do
-        gateway imaging create ${mac//:/}
+    for id in 614aa1e0 054f967f 6d646ef9 6910acfb; do
+        gateway imaging create ${id}
     done
     gateway imaging get
 
@@ -42,6 +68,7 @@ From an empty system install the following onto gateway:
     ssh-keygen -R k8s102
     ssh-keygen -R k8s102.k8s
     ssh-keygen -R 192.168.2.102
+    ssh-keygen -R k8s103
     ssh-keygen -R k8s103.k8s
     ssh-keygen -R 192.168.2.103
 
@@ -73,6 +100,10 @@ Manually log into each client to set the ssh keys
     ansible k8s -m ping -k -e "ansible_ssh_user=dietpi"
     ansible-playbook ansible-initial-config.yaml -l k8s -kKb -e "ansible_ssh_user=dietpi"
 
+or with updated ssh keys
+
+    ansible k8s -m ping -e "ansible_ssh_user=dietpi"
+    ansible-playbook ansible-initial-config.yaml -l k8s -e "ansible_ssh_user=dietpi"
 
 
 When first adding a computer:

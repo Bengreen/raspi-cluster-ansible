@@ -1,6 +1,27 @@
 cni: flannel
 metallb:
-  version: v0.12.1
+  version: v0.13.9
+  crd:
+    apiVersion: metallb.io/v1beta1
+    kind: IPAddressPool
+    metadata:
+      name: default
+      namespace: metallb-system
+    spec:
+      addresses:
+      - 198.168.2.240-192.168.2.250
+    status: {}
+    ---
+    apiVersion: metallb.io/v1beta1
+    kind: L2Advertisement
+    metadata:
+      creationTimestamp: null
+      name: l2advertisement1
+      namespace: metallb-system
+    spec:
+      ipAddressPools:
+      - default
+    status: {}
   config:
     apiVersion: v1
     kind: ConfigMap
@@ -14,6 +35,7 @@ metallb:
           protocol: layer2
           addresses:
           - 192.168.2.240-192.168.2.250
+
 calico:
   config:
     apiVersion: operator.tigera.io/v1

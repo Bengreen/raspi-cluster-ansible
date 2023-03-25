@@ -6,5 +6,5 @@
     ansible_become: yes
   roles:
     - hostname
-    - firmware
+    # - firmware
     - pyfan
