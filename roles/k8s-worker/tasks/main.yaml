@@ -11,3 +11,4 @@
 
 - name: Join cluster
   command: "kubeadm join 192.168.2.100:6443 --token {{ hostvars['k8s100.k8s']['k8sMasterToken'] }} --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s100.k8s']['k8sMasterCa'] }}"
+  notify: Restart containerd

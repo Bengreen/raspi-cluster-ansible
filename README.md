@@ -93,7 +93,11 @@ Then check the configuration of Traefik LoadBalancer to confirm it is got the an
 
 # Add Clients
 
-add the nodes to the hosts file on the gateway at /etc/ansible/hosts
+For x86_64 client does nto have python installed as default. So need to install that before we can use ansible.
+
+    apt install python3
+
+add the nodes to the hosts file on the gateway at /etc/ansible/hosts or can just be in the hosts file in this dir if the /etc/ansible/hosts does not exist
 
 Manually log into each client to set the ssh keys
 

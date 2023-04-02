@@ -1,0 +1,94 @@
+---
+metallb:
+  version: v0.13.9
+  crd:
+    ipaddresspool:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: default
+        namespace: metallb-system
+      spec:
+        addresses:
+        - 192.168.2.240-192.168.2.250
+      status: {}
+    l2advertisement:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        creationTimestamp: null
+        name: l2advertisement1
+        namespace: metallb-system
+      spec:
+        ipAddressPools:
+        - default
+      status: {}
+
+  crds: |
+    ---
+    apiVersion: metallb.io/v1beta1
+    kind: IPAddressPool
+    metadata:
+      name: default
+      namespace: metallb-system
+    spec:
+      addresses:
+      - 192.168.2.240-192.168.2.250
+    status: {}
+    ---
+    apiVersion: metallb.io/v1beta1
+    kind: L2Advertisement
+    metadata:
+      creationTimestamp: null
+      name: l2advertisement1
+      namespace: metallb-system
+    spec:
+      ipAddressPools:
+      - default
+    status: {}
+  config:
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - 192.168.2.240-192.168.2.250
+
+calico:
+  config:
+    apiVersion: operator.tigera.io/v1
+    kind: Installation
+    metadata:
+      name: default
+    spec:
+      # Configures Calico networking.
+      calicoNetwork:
+        # Note: The ipPools section cannot be modified post-install.
+        ipPools:
+        - blockSize: 26
+          cidr: 10.244.0.0/16
+          encapsulation: VXLANCrossSubnet
+          natOutgoing: Enabled
+          nodeSelector: all()
+traefik:
+  config:
+    # dashboard.yaml
+    apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: dashboard
+    spec:
+      entryPoints:
+        - web
+      routes:
+        - match: Host(`traefik.k8s`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+          kind: Rule
+          services:
+            - name: api@internal
+              kind: TraefikService

@@ -2,7 +2,7 @@
 - name: Set Config
   set_fact:
     targetDir: /opt/gateway
-    ls:
+    images:
       - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.7z
       - https://dietpi.com/downloads/images/DietPi_NativePC-BIOS-x86_64-Bullseye.7z
     tftpDir: /tftpboot

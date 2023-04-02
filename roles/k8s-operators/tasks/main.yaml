@@ -1,0 +1,53 @@
+---
+- name: Metallb Install
+  block:
+  # - name: Create namespace
+  #   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
+
+  - name: Set kube-proxy strictARP
+    shell: >-
+      kubectl --kubeconfig /etc/kubernetes/admin.conf get configmap kube-proxy -n kube-system -o yaml |
+      sed -e "s/strictARP: false/strictARP: true/" |
+      kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f - -n kube-system
+
+  - name: Install
+    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
+
+  - name: Create Secret
+    command: openssl rand -base64 128
+    register: metallbSecret
+
+  - name: Delete Secret
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf delete secret -n metallb-system memberlist
+
+  - name: Install Secret
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
+
+
+  - name: Write CRD
+    shell:
+      cmd: cat >> /tmp/monkey.yaml
+      stdin: "{{ metallb.crds }}"
+
+  - name: Install CRD
+    shell:
+      cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+      stdin: "{{ metallb.crds }}"
+    register: installCrd
+    until: "installCrd is not failed"
+    retries: 20
+    delay: 10
+
+- name: Traefik Install
+  block:
+  - name: Traefik helm repo
+    command: "{{ item }}"
+    with_items:
+      - kubectl --kubeconfig /etc/kubernetes/admin.conf create namespace traefik-system
+      - helm repo add traefik https://helm.traefik.io/traefik
+      - helm repo update
+      - helm --kubeconfig /etc/kubernetes/admin.conf -n traefik-system upgrade -i traefik traefik/traefik
+  - name: Traefik dashboard
+    command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n traefik-system apply -f -
+    args:
+      stdin: "{{ traefik.config | to_nice_yaml(indent=2) }}"

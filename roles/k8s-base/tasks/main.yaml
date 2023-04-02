@@ -110,9 +110,9 @@
 
   when: kubeAdmReset
 
-- name: Restart containerd
-  systemd:
-    name: containerd
-    state: restarted
-    daemon_reload: yes
-  when: containerdConfig.changed
+# - name: Restart containerd
+#   systemd:
+#     name: containerd
+#     state: restarted
+#     daemon_reload: yes
+#   when: containerdConfig.changed

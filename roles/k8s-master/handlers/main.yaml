@@ -1,0 +1,16 @@
+
+- name: Restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes
+
+- name: Wait for node to be ready
+  become: yes
+  ansible.builtin.shell: $([[ $(kubectl get node $(cat /etc/hostname) -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}') == "True" ]])
+  args:
+    executable: /bin/bash
+  register: kubelet_ready
+  until: kubelet_ready.rc == 0
+  retries: 60
+  delay: 3

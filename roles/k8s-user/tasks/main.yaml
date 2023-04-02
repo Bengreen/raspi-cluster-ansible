@@ -6,6 +6,7 @@
     groups:
     - wheel
     append: yes
+    shell: /bin/bash
     state: present
     createhome: yes
 

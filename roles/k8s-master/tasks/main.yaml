@@ -2,6 +2,8 @@
 - name: init kubeadm
   command: kubeadm init --pod-network-cidr "10.244.0.0/16"  --apiserver-cert-extra-sans=192.168.1.100
   when: kubeAdmReset
+  notify: Restart containerd
+
 
 - name: Get master token
   # command: kubeadm token create # --print-join-command
@@ -18,6 +20,7 @@
     openssl rsa -pubin -outform DER 2>/dev/null |
     sha256sum | cut -d ' ' -f1
   register: k8sMasterCa
+
 
 
 - name: Calico CNI
@@ -55,45 +58,52 @@
   when: cni == 'flannel'
 
 
-- name: Metallb
-  block:
-  # - name: Create namespace
-  #   command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
+- name: Restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes
 
-  - name: Set kube-proxy strictARP
-    shell: >-
-      kubectl --kubeconfig /etc/kubernetes/admin.conf get configmap kube-proxy -n kube-system -o yaml |
-      sed -e "s/strictARP: false/strictARP: true/" |
-      kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f - -n kube-system
+- name: Wait for node to be ready
+  become: yes
+  ansible.builtin.shell: $([[ $(kubectl --kubeconfig /etc/kubernetes/admin.conf get node $(cat /etc/hostname) -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}') == "True" ]])
+  args:
+    executable: /bin/bash
+  register: kubelet_ready
+  until: kubelet_ready.rc == 0
+  retries: 60
+  delay: 3
 
-  - name: Install
-    command: "kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb.version }}/config/manifests/metallb-native.yaml"
 
-  - name: Create Secret
-    command: openssl rand -base64 128
-    register: metallbSecret
 
-  - name: Install Secret
-    command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
 
-  - name: Install CRDs
-    command:
-      cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
-      stdin: "{{ metallb.crd | to_nice_yaml(indent=2) }}"
 
-- name: Traefik
-  block:
-  - name: Traefik helm repo
-    command: "{{ item }}"
-    with_items:
-      - kubectl --kubeconfig /etc/kubernetes/admin.conf create namespace traefik-system
-      - helm repo add traefik https://helm.traefik.io/traefik
-      - helm repo update
-      - helm --kubeconfig /etc/kubernetes/admin.conf -n traefik-system upgrade -i traefik traefik/traefik
-  - name: Traefik dashboard
-    command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n traefik-system apply -f -
-    args:
-      stdin: "{{ traefik.config | to_nice_yaml(indent=2) }}"
+
+  # - name: Write CRD
+  #   shell:
+  #     cmd: cat >> /tmp/monkey.yaml
+  #     stdin: "{{ metallb.crd }}"
+
+
+  # - name: Install CRD
+  #   shell:
+  #     cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+  #     stdin: "{{ metallb.crd }}"
+    # register: installCrd
+    # until: "installCrd is not failed"
+    # retries: 20
+    # delay: 10
+
+  # - name: Install CRD - IPAddressPool
+  #   command:
+  #     cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+  #     stdin: "{{ metallb.crds.ipaddresspool | to_nice_yaml(indent=2) }}"
+
+  # - name: Install CRD - L2Advertisement
+  #   command:
+  #     cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+  #     stdin: "{{ metallb.crds.l2advertisement | to_nice_yaml(indent=2) }}"
+
 
 - name: Read kubeconfig
   command: cat /etc/kubernetes/admin.conf
@@ -104,3 +114,6 @@
     k8sMasterToken: "{{ k8sMasterToken.stdout }}"
     k8sMasterCa: "{{ k8sMasterCa.stdout }}"
     kubeconfig: "{{ kubeconfigCat.stdout }}"
+  notify:
+  - Metallb Install
+  - Traefik Install
