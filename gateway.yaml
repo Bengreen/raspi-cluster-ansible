@@ -8,6 +8,9 @@
     nfs_exports:
       - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
+    dnshosts:
+      dockerreg: 192.168.2.1
+      traefik: 192.168.2.240
   roles:
     - clusterctrl
     - pyfan

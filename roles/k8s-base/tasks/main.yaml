@@ -52,6 +52,15 @@
   - net.ipv4.ip_forward
 
 
+- name: Enable CriCtrl
+  copy:
+    src: files/crictl.yaml
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: '0644'
+  register: containerdConfig
+
 - name: Enable CRI plugins
   copy:
     src: files/containerd/config.toml
@@ -59,6 +68,16 @@
     owner: root
     group: root
     mode: '0644'
+  register: containerdConfig
+
+- name: Add containerd hosts
+  copy:
+    src: files/containerd/certs.d
+    dest: /etc/containerd/
+    owner: root
+    group: root
+    mode: '0644'
+    directory_mode: '0755'
   register: containerdConfig
 
 # - name: Enable CRI plugin

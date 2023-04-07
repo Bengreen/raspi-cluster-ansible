@@ -185,3 +185,6 @@ Reset master
 * [x] Install the fan control
 * [ ] Set the default user for ssh login on dietpi for first boot
 * [ ] Add /etc/dnsmasq.d to config of dnsmasq
+* [*] Add dockerreg.k8s to hosts
+* [*] Trigger restart of dnsmasq after updating hosts
+* [*] Add traefik.k8s to hosts

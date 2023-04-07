@@ -1,0 +1,4 @@
+server = "https://docker.io"
+
+[host."http://dockerreg.k8s:5001"]
+  capabilities = ["pull", "resolve"]
