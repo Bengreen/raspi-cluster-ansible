@@ -25,4 +25,4 @@
     content: "{{ hostvars['k8s100.k8s']['kubeconfig'] }}"
     owner: "{{ k8sAdminUser }}"
     group: "{{ k8sAdminUser }}"
-    mode: '0640'
+    mode: '0600'

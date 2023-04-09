@@ -23,12 +23,6 @@
   - name: Install Secret
     command: kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey="{{ metallbSecret.stdout }}"
 
-
-  - name: Write CRD
-    shell:
-      cmd: cat >> /tmp/monkey.yaml
-      stdin: "{{ metallb.crds }}"
-
   - name: Install CRD
     shell:
       cmd: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
@@ -38,9 +32,72 @@
     retries: 20
     delay: 10
 
-- name: Traefik Install
+- name: Istio Install
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
-  - name: Traefik helm repo
+  - name: Helm Istio
+    command: "{{ item }}"
+    with_items:
+    - helm repo add istio https://istio-release.storage.googleapis.com/charts
+    - helm repo update
+    - kubectl create namespace istio-system
+    - helm install istio-base istio/base -n istio-system
+    - helm install istiod istio/istiod -n istio-system --wait
+    - kubectl create namespace istio-ingress
+    - helm install istio-ingress istio/gateway -n istio-ingress --wait
+  - name: Ingress Gateway
+    command: kubectl -n istio-ingress apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ istio.gateway }}"
+
+
+- name: Longhorn Install
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Longhorn helm
+    command: "{{ item }}"
+    with_items:
+    - helm repo add longhorn https://charts.longhorn.io
+    - helm repo update
+    - kubectl create ns longhorn-system
+    - helm install longhorn longhorn/longhorn --namespace longhorn-system
+  - name: Longhorn VirtualService
+    command: kubectl -n longhorn-system apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ longhorn.virtualservice }}"
+
+- name: Certman Install
+  when: False
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Helm Certman
+    shell: "{{ item }}"
+    with_items:
+    - helm repo add jetstack https://charts.jetstack.io
+    - helm repo update
+    - kubectl create namespace cert-manager
+    - helm upgrade --install cert-manager jetstack/cert-manager --set installCRDs=true --namespace cert-manager
+    - kubectl create namespace cert-manager-selfsigned
+  - name: Self signed Cert
+    command: kubectl -n cert-manager-selfsigned apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ certman.issuer_root }}"
+    - "{{ certman.certificate }}"
+    - "{{ certman.issuer_ca }}"
+
+- name: Traefik Install
+  when: False
+  block:
+  - name: Helm Traefik
     command: "{{ item }}"
     with_items:
       - kubectl --kubeconfig /etc/kubernetes/admin.conf create namespace traefik-system
@@ -51,3 +108,176 @@
     command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n traefik-system apply -f -
     args:
       stdin: "{{ traefik.config | to_nice_yaml(indent=2) }}"
+
+- name: K8s Monitoring
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Patchfile
+    copy:
+      src: metrics.patch
+      dest: /tmp/
+  - name: Kubectl
+    shell: "{{ item }}"
+    with_items:
+    - curl -o /tmp/metrics.yaml -L https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+    - patch /tmp/metrics.yaml /tmp/metrics.patch -o- | kubectl apply -f -
+  - name: remove Patchfile
+    file:
+      path: /tmp/metrics.patch
+      state: absent
+  - name: remove Components
+    file:
+      path: /tmp/components.yaml
+      state: absent
+
+- name: Monitoring Prometheus
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  # - name: Prometheus Values
+  #   copy:
+  #     src: grafana-values.yaml
+  #     dest: /tmp/
+  - name: Helm Prometheus
+    shell: "{{ item }}"
+    with_items:
+    - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    - helm repo update
+    - kubectl create namespace prometheus
+    - helm -n prometheus upgrade -i prometheus prometheus-community/prometheus
+  - name: Prometheus VirtualService
+    command: kubectl -n prometheus apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ prometheus.virtualservice }}"
+
+- name: Monitoring Grafana
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Grafana Values
+    copy:
+      src: grafana-values.yaml
+      dest: /tmp/
+  - name: Grafana Dashboards
+    copy:
+      src: grafana-dashboards
+      dest: /tmp/
+  - name: Helm Grafana
+    shell: "{{ item }}"
+    with_items:
+    - kubectl create namespace grafana
+    - kubectl -n grafana create configmap cluster-dashboard --from-file=cluster.json=/tmp/grafana-dashboards/cluster.json
+    - kubectl -n grafana label configmap cluster-dashboard grafana_dashboard=1
+    - kubectl -n grafana create configmap network-dashboard --from-file=network.json=/tmp/grafana-dashboards/network.json
+    - kubectl -n grafana label configmap network-dashboard grafana_dashboard=1
+    - helm repo add grafana https://grafana.github.io/helm-charts
+    - helm repo update
+    - helm -n grafana install grafana grafana/grafana -f /tmp/grafana-values.yaml
+  - name: remove grafana values
+    file:
+      path: /tmp/grafana-values.yaml
+      state: absent
+  - name: remove grafana dashboards
+    file:
+      path: /tmp/grafana-dashboards
+      state: absent
+  - name: Grafana VirtualService
+    command: kubectl -n grafana apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ grafana.virtualservice }}"
+
+- name: Monitoring Jaeger
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Values File
+    copy:
+      src: jaeger-values.yaml
+      dest: /tmp/
+  - name: Helm Jaeger
+    shell: "{{ item }}"
+    with_items:
+    - helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+    - helm repo update
+    - kubectl create namespace jaeger
+    - helm -n jaeger upgrade -i jaeger jaegertracing/jaeger -f /tmp/jaeger-values.yaml
+  - name: remove values
+    file:
+      path: /tmp/jaeger-values.yaml
+      state: absent
+  - name: Jaeger VirtualService
+    command: kubectl -n jaeger apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ jaeger.virtualservice }}"
+
+
+- name: Kiali
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name:
+    copy:
+      src: kiali-values.yaml
+      dest: /tmp/
+  - name: Kiali Monitoring
+    shell: "{{ item }}"
+    with_items:
+    - helm repo add kiali https://kiali.org/helm-charts
+    - helm repo update
+    - helm -n istio-system upgrade -i kiali kiali/kiali-server -f /tmp/kiali-values.yaml
+  - name: remove valuies
+    file:
+      path: /tmp/kiali-values.yaml
+      state: absent
+  - name: Kiali VirtualService
+    command: kubectl -n istio-system apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ kiali.virtualservice }}"
+
+- name: Install VirtualServices
+  when: False
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: VirtualService
+    command: kubectl -n default apply -f -
+    args:
+      stdin: "{{ item | to_nice_yaml(indent=2) }}"
+    with_items:
+    - "{{ longhorn.virtualservice }}"
+    - "{{ prometheus.virtualservice }}"
+    - "{{ grafana.virtualservice }}"
+    - "{{ kiali.virtualservice }}"
+    - "{{ jaeger.virtualservice }}"
+    # - "{{ certman.certificate }}"
+    # - "{{ certman.issuer_ca }}"
+
+  # - name: Istio Gateway
+  #   command: kubectl -n default apply -f -
+  #   args:
+  #     stdin: "{{ istio.ingress | to_nice_yaml(indent=2) }}"
+  # - name: Istio VirtualService
+  #   command: kubectl --kubeconfig /etc/kubernetes/admin.conf -n default apply -f -
+  #   args:
+  #     stdin: "{{ istio.virtualservice | to_nice_yaml(indent=2) }}"
+
+
+
+
+  # - name: Self signed Cert
+  #   command: kubectl -n cert-manager-selfsigned apply -f -
+  #   args:
+  #     stdin: "{{ item | to_nice_yaml(indent=2) }}"
+  #   with_items:
+  #   - "{{ certman.issuer_root }}"
+  #   - "{{ certman.certificate }}"
+  #   - "{{ certman.issuer_ca }}"

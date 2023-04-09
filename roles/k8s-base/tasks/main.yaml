@@ -10,6 +10,7 @@
     - kubeadm={{ kubernetes_version }}
     - containernetworking-plugins
     - containerd.io
+    - open-iscsi
 
 - name: modules-load.d
   copy:

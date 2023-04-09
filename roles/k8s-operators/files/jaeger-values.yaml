@@ -1,0 +1,9 @@
+---
+provisionDataStore:
+  cassandra: false
+  elasticsearch: true
+storage:
+  type: elasticsearch
+cassandra:
+  persistence:
+    enabled: true

@@ -188,3 +188,5 @@ Reset master
 * [*] Add dockerreg.k8s to hosts
 * [*] Trigger restart of dnsmasq after updating hosts
 * [*] Add traefik.k8s to hosts
+* [*] Add PV https://michael-tissen.medium.com/installing-longhorn-on-a-on-raspberry-pi-kubernetes-cluster-5933c85c7d1e using Longhorn for PVC
+* [ ] Kubernetes metrics server: https://levelup.gitconnected.com/setting-up-and-using-metrics-server-for-raspberrypi-kubernetes-cluster-de2e10bb9459

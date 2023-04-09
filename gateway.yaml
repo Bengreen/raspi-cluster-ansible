@@ -11,6 +11,10 @@
     dnshosts:
       dockerreg: 192.168.2.1
       traefik: 192.168.2.240
+      longhorn: 192.168.2.241
+      prometheus: 192.168.2.241
+      grafana: 192.168.2.241
+      kiali: 192.168.2.241
   roles:
     - clusterctrl
     - pyfan

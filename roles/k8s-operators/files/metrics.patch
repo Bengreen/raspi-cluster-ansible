@@ -1,0 +1,10 @@
+--- components.yaml	2023-04-09 09:04:08.854924359 +0100
++++ metrics-components.yaml	2023-04-09 01:43:57.178940101 +0100
+@@ -137,6 +137,7 @@
+         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+         - --kubelet-use-node-status-port
+         - --metric-resolution=15s
++        - --kubelet-insecure-tls=true
+         image: registry.k8s.io/metrics-server/metrics-server:v0.6.3
+         imagePullPolicy: IfNotPresent
+         livenessProbe:

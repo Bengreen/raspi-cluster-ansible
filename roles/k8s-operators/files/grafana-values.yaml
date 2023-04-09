@@ -1,0 +1,16 @@
+---
+persistence:
+  enabled: true
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      uid: prometheus00
+      url: http://prometheus-server.prometheus.svc.cluster.local
+
+sidecar:
+  dashboards:
+    enabled: true

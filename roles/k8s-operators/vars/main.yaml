@@ -1,4 +1,246 @@
 ---
+jaeger:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: jaeger
+    spec:
+      hosts:
+      - jaeger.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        route:
+        - destination:
+            host: jaeger-query.jaeger.svc.cluster.local
+            port:
+              number: 80
+
+kiali:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: kiali
+    spec:
+      hosts:
+      - kiali.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001
+grafana:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: grafana
+    spec:
+      hosts:
+      - grafana.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        route:
+        - destination:
+            host: grafana.grafana.svc.cluster.local
+            port:
+              number: 80
+prometheus:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: prometheus
+    spec:
+      hosts:
+      - prometheus.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        route:
+        - destination:
+            host: prometheus-server.prometheus.svc.cluster.local
+            port:
+              number: 80
+certman:
+  issuer_root:
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: selfsigned-issuer-root
+    spec:
+      selfSigned: {}
+  certificate:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: selfsigned-issuer-ca
+    spec:
+      commonName: selfsigned-issuer-ca
+      duration: 2160h0m0s
+      isCA: true
+      issuerRef:
+        group: cert-manager.io
+        kind: Issuer
+        name: selfsigned-issuer-root
+      privateKey:
+        algorithm: ECDSA
+        size: 256
+      renewBefore: 360h0m0s
+      secretName: selfsigned-issuer-ca
+  issuer_ca:
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: selfsigned-issuer
+    spec:
+      ca:
+        secretName: selfsigned-issuer-ca
+
+istio:
+  certficiate:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: ingress-cert
+      namespace: istio-system
+    spec:
+      secretName: ingress-cert
+      commonName: my.example.com
+      dnsNames:
+      - my.example.com
+
+  gateway:
+    apiVersion: networking.istio.io/v1beta1
+    kind: Gateway
+    metadata:
+      name: my-gateway
+      namespace: istio-ingress
+    spec:
+      selector:
+        app: istio-ingress
+      servers:
+      - port:
+          number: 80
+          name: http
+          protocol: HTTP
+        hosts:
+        - "*.k8s"
+        # tls:
+        #   httpsRedirect: true # sends 301 redirect for http requests
+      # - port:
+      #     number: 443
+      #     name: https-443
+      #     protocol: HTTPS
+      #   hosts:
+      #   - "*.k8s"
+      #   tls:
+      #     mode: SIMPLE # enables HTTPS on this port
+      #     certificateRefs:
+      #     - name: k8s-certificate
+      #     # serverCertificate: /etc/certs/servercert.pem
+      #     # privateKey: /etc/certs/privatekey.pem
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: bookinfo-rule
+      namespace: default
+    spec:
+      hosts:
+      # - reviews.prod.svc.cluster.local
+      - yellow.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        # - headers:
+        #     cookie:
+        #       exact: "user=dev-123"
+        route:
+        - destination:
+            port:
+              number: 7777
+            host: reviews.qa.svc.cluster.local
+      # - match:
+      #   - uri:
+      #       prefix: /reviews/
+      #   route:
+      #   - destination:
+      #       port:
+      #         number: 9080 # can be omitted if it's the only port for reviews
+      #       host: reviews.prod.svc.cluster.local
+      #     weight: 80
+      #   - destination:
+      #       host: reviews.qa.svc.cluster.local
+      #     weight: 20
+
+
+longhorn:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: longhorn
+    spec:
+      hosts:
+      # - reviews.prod.svc.cluster.local
+      - longhorn.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        # - headers:
+        #     cookie:
+        #       exact: "user=dev-123"
+        route:
+        - destination:
+            host: longhorn-frontend.longhorn-system.svc.cluster.local
+            port:
+              number: 80
+  ingress:
+    apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: longhorn-ui
+      namespace: longhorn-system
+    spec:
+      entryPoints:
+      - web
+      routes:
+      - match: Host(`longhorn.k8s`)
+        kind: Rule
+        services:
+        - name: longhorn-frontend
+          port: 80
 metallb:
   version: v0.13.9
   crd:
