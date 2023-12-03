@@ -1,7 +1,10 @@
 
-- name: Add Kubernetes GPG key
-  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+- name: Download Google apt gpg file
+  # https://opensource.com/article/22/9/deprecated-linux-apt-key
+  ansible.builtin.get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /etc/apt/trusted.gpg.d/google.asc
 
 - name: Add Kubernetes APT repository
   apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: deb http://apt.kubernetes.io/ kubernetes-yakkety main

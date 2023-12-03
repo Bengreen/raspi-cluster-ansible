@@ -242,7 +242,7 @@ longhorn:
         - name: longhorn-frontend
           port: 80
 metallb:
-  version: v0.13.9
+  version: v0.13.12
   crd:
     ipaddresspool:
       apiVersion: metallb.io/v1beta1

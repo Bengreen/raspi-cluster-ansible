@@ -3,8 +3,8 @@
   set_fact:
     targetDir: /opt/gateway
     images:
-      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.7z
-      - https://dietpi.com/downloads/images/DietPi_NativePC-BIOS-x86_64-Bullseye.7z
+      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bookworm.7z
+      # - https://dietpi.com/downloads/images/DietPi_NativePC-UEFI-x86_64-Bookworm_Installer.iso.xz
     tftpDir: /tftpboot
 - set_fact:
     mountImageName: "{{ (images[0] | basename).split('.') | first }}"
@@ -142,7 +142,7 @@
   pip:
     name: "{{ targetDir }}/python"
     virtualenv: "{{ targetDir }}/venv"
-    virtualenv_python: python3.9
+    virtualenv_python: python3
 
 - name: Gateway Systemd
   copy:

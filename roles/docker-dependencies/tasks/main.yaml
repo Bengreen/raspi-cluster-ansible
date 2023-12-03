@@ -1,9 +1,8 @@
-- name: Download gpg file
+- name: Download Docker Ubunbtu apt gpg file
   # https://opensource.com/article/22/9/deprecated-linux-apt-key
   ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /etc/apt/trusted.gpg.d/docker_ubuntu.asc
-    mode: '0440'
 
 - name: Add Docker APT repository
   apt_repository:
