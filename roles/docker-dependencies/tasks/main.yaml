@@ -1,5 +1,9 @@
-- name: Add Docker GPG key
-  apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+- name: Download gpg file
+  # https://opensource.com/article/22/9/deprecated-linux-apt-key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/trusted.gpg.d/docker_ubuntu.asc
+    mode: '0440'
 
 - name: Add Docker APT repository
   apt_repository:
