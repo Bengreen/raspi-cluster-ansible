@@ -176,6 +176,13 @@ Reset all
 Reset master
 
 
+# FluxCD
+
+https://fluxcd.io/flux/installation/
+
+
+
+
 # Things to do
 
 * [x] Set the /etc/default/rpi-eeprom-update  to track stable

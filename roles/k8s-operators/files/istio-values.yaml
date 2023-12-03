@@ -1,0 +1,14 @@
+# Istiod config installs
+---
+
+#global:
+#  tracer:
+#    zipkin:
+#      address: jaeger-collector.jaeger.svc.cluster.local:9411
+meshConfig:
+  extensionProviders: # The following content defines two example tracing providers.
+  - name: "localtrace"
+    zipkin:
+      service: "jaeger-collector.jaeger.svc.cluster.local"
+      port: 9411
+      maxTagLength: 56

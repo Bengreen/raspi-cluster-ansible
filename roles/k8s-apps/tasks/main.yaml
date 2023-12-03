@@ -1,0 +1,21 @@
+---
+- name: Bookinfo Install
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Bookinfo Files
+    copy:
+      src: bookinfo
+      dest: /tmp/
+  - name: Helm Istio
+    command: "{{ item }}"
+    with_items:
+    - kubectl create namespace bookinfo
+    - kubectl label namespace bookinfo istio-injection=enabled --overwrite
+    - kubectl -n bookinfo apply -f /tmp/bookinfo/bookinfo-vs.yaml
+    - kubectl -n bookinfo apply -f /tmp/bookinfo/bookinfo-telemetry.yaml
+    - kubectl -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
+  - name: remove bookinfo temp files
+    file:
+      path: /tmp/bookinfo
+      state: absent

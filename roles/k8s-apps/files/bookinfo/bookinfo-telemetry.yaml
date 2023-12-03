@@ -1,0 +1,15 @@
+# https://istio.io/latest/docs/tasks/observability/telemetry/
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: mesh-default
+spec:
+  tracing:
+  - providers:
+    - name: localtrace
+    customTags:
+      foo:
+        literal:
+          value: bar
+    randomSamplingPercentage: 100

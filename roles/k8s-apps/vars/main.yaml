@@ -1,0 +1,22 @@
+---
+homeassistant:
+  virtualservice:
+    apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: jaeger
+    spec:
+      hosts:
+      - homeassistant.k8s
+      gateways:
+      - istio-ingress/my-gateway
+      - mesh # applies to all the sidecars in the mesh
+      http:
+      - match:
+        - uri:
+            prefix: /
+        route:
+        - destination:
+            host: home-assistant.homeassistant.svc.cluster.local
+            port:
+              number: 8123

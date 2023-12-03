@@ -10,7 +10,9 @@
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
     dnshosts:
       dockerreg: 192.168.2.1
-      traefik: 192.168.2.240
+      traefik: 192.168.2.241
+      weave: 192.168.2.241
+      minio: 192.168.2.241
       longhorn: 192.168.2.241
       prometheus: 192.168.2.241
       grafana: 192.168.2.241

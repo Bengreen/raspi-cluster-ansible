@@ -36,22 +36,30 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
+  - name: Values File
+    copy:
+      src: istio-values.yaml
+      dest: /tmp/
   - name: Helm Istio
     command: "{{ item }}"
     with_items:
     - helm repo add istio https://istio-release.storage.googleapis.com/charts
     - helm repo update
     - kubectl create namespace istio-system
-    - helm install istio-base istio/base -n istio-system
-    - helm install istiod istio/istiod -n istio-system --wait
+    - helm upgrade -i istio-base istio/base -n istio-system
+    - helm upgrade -i istiod istio/istiod -n istio-system --wait -f /tmp/istio-values.yaml
     - kubectl create namespace istio-ingress
-    - helm install istio-ingress istio/gateway -n istio-ingress --wait
+    - helm upgrade -i istio-ingress istio/gateway -n istio-ingress --wait
   - name: Ingress Gateway
     command: kubectl -n istio-ingress apply -f -
     args:
       stdin: "{{ item | to_nice_yaml(indent=2) }}"
     with_items:
     - "{{ istio.gateway }}"
+  - name: remove istio values
+    file:
+      path: /tmp/istio-values.yaml
+      state: absent
 
 
 - name: Longhorn Install
@@ -64,13 +72,15 @@
     - helm repo add longhorn https://charts.longhorn.io
     - helm repo update
     - kubectl create ns longhorn-system
-    - helm install longhorn longhorn/longhorn --namespace longhorn-system
+    - helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system
   - name: Longhorn VirtualService
     command: kubectl -n longhorn-system apply -f -
     args:
       stdin: "{{ item | to_nice_yaml(indent=2) }}"
     with_items:
     - "{{ longhorn.virtualservice }}"
+
+
 
 - name: Certman Install
   when: False

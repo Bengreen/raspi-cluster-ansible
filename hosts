@@ -37,14 +37,14 @@ all:
           hosts:
             k8s100.k8s:
               ip: 192.168.2.100
-              mac: dc:a6:32:b8:8b:c2
-              serial: 614aa1e0
+              mac: dc:a6:32:55:76:33
+              serial: 054f967f
         k8sworker:
           hosts:
             k8s101.k8s:
               ip: 192.168.2.101
-              mac: dc:a6:32:55:76:33
-              serial: 054f967f
+              mac: dc:a6:32:b8:8b:c2
+              serial: 614aa1e0
             k8s102.k8s:
               ip: 192.168.2.102
               mac: dc:a6:32:48:4c:eb

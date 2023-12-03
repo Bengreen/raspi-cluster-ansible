@@ -7,3 +7,16 @@ storage:
 cassandra:
   persistence:
     enabled: true
+
+collector:
+  service:
+    zipkin:
+      port: 9411
+
+
+elasticsearch:
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 10Gi
