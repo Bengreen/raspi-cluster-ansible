@@ -21,6 +21,10 @@ ssh-keyscan -H k8s102 >>~/.ssh/known_hosts
 ssh-keyscan -H k8s102.k8s >>~/.ssh/known_hosts
 ssh-keyscan -H k8s103 >>~/.ssh/known_hosts
 ssh-keyscan -H k8s103.k8s >>~/.ssh/known_hosts
+ssh-keyscan -H k8s104 >>~/.ssh/known_hosts
+ssh-keyscan -H k8s104.k8s >>~/.ssh/known_hosts
+ssh-keyscan -H k8s105 >>~/.ssh/known_hosts
+ssh-keyscan -H k8s105.k8s >>~/.ssh/known_hosts
 
 # ssh dietpi@k8s100
 # ssh dietpi@k8s101

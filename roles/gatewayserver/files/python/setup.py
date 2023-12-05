@@ -33,6 +33,7 @@ setuptools.setup(
         "python-systemd",
         "requests",
         "click",
+        "pydantic-settings",
     ],
     extras_require={
         "dev": [

@@ -4,7 +4,6 @@
   roles:
   - k8s-dependencies
   - hostname
-  # - pyfan
 - hosts: k8smaster
   vars:
     kubeAdmReset: true
@@ -27,5 +26,5 @@
   - k8s-utils
   - k8s-user
 - hosts: k8smaster
-  roles:
-  - k8s-operators
+  roles: []
+  # - k8s-operators

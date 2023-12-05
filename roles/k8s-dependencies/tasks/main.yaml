@@ -2,9 +2,10 @@
 - name: Download Google apt gpg file
   # https://opensource.com/article/22/9/deprecated-linux-apt-key
   ansible.builtin.get_url:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: /etc/apt/trusted.gpg.d/google.asc
+    url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
 
 - name: Add Kubernetes APT repository
   apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-yakkety main
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+    # deb http://apt.kubernetes.io/ kubernetes-yakkety main

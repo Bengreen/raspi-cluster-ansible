@@ -17,7 +17,7 @@
     packages:
     - python3-pip
     - python3-dev
-    - python-setuptools # Needed for ansible to switch to python3
+    # - python-setuptools # Needed for ansible to switch to python3
     - virtualenv
     - build-essential # needed to perform gcc builds or aarch64
 

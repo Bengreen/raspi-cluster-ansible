@@ -6,5 +6,10 @@
     ansible_become: yes
   roles:
     - hostname
-    # - firmware
+- hosts: rpinodes
+  vars:
+    ansible_user: ansible
+    k8sAdminUser: k8sadmin
+    ansible_become: yes
+  roles:
     - pyfan
