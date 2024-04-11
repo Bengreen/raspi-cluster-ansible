@@ -10,17 +10,17 @@
       - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
     dnshosts:
       dockerreg: 192.168.2.1
-      traefik: 192.168.2.241
-      weave: 192.168.2.241
-      minio: 192.168.2.241
-      longhorn: 192.168.2.241
-      prometheus: 192.168.2.241
-      grafana: 192.168.2.241
-      kiali: 192.168.2.241
+      weave: 192.168.2.240
+      minio: 192.168.2.240
+      longhorn: 192.168.2.240
+      prometheus: 192.168.2.240
+      grafana: 192.168.2.240
+      kiali: 192.168.2.240
+      pgadmin: 192.168.2.240
   roles:
     - clusterctrl
     - pyfan
-    - vlan
+    - gw-lan
     - dnsmasq
     - router
     - initrd

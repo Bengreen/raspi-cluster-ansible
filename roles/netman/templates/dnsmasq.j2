@@ -9,10 +9,11 @@ domain=lan
 server=8.8.8.8
 server=8.8.4.4
 server=/k8s/192.168.1.100
+server=/shed/192.168.199.1
 dhcp-option=option:router,192.168.1.254
 # https://ral-arturo.org/2018/09/12/dhcp-static-route.html
-dhcp-option=option:classless-static-route,0.0.0.0/0,192.168.1.254,192.168.2.0/24,192.168.1.100
-dhcp-option=tag:gwrouting,option:classless-static-route,0.0.0.0/0,192.168.1.254
+dhcp-option=option:classless-static-route,0.0.0.0/0,192.168.1.254,192.168.2.0/24,192.168.1.100,192.168.199.0/24,192.168.1.1
+dhcp-option=tag:gwrouting,option:classless-static-route,0.0.0.0/0,192.168.1.254,192.168.199.0/24,192.168.1.1
 {% for static in static_addr %}
 dhcp-host={{ static.name }},{% if static.custom_tag|length %}{{ static.custom_tag }},{% endif %}{{ static.ip }}
 {% endfor %}

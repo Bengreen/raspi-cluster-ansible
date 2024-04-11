@@ -1,8 +1,0 @@
----
-- name: Network file
-  template:
-    src: vlan.j2
-    dest: /etc/network/interfaces.d/vlans
-    owner: root
-    group: root
-    mode: 0644

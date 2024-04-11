@@ -1,0 +1,16 @@
+---
+- name: vlan
+  template:
+    src: vlan.j2
+    dest: /etc/network/interfaces.d/vlans
+    owner: root
+    group: root
+    mode: 0644
+
+- name: eth0
+  template:
+    src: eth0.j2
+    dest: /etc/network/interfaces.d/eth0
+    owner: root
+    group: root
+    mode: 0644
