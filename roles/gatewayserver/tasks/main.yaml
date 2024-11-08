@@ -3,7 +3,7 @@
   set_fact:
     targetDir: /opt/gateway
     images:
-      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bookworm.7z
+      - https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bookworm.img.xz
       # - https://dietpi.com/downloads/images/DietPi_NativePC-UEFI-x86_64-Bookworm_Installer.iso.xz
     tftpDir: /tftpboot
 - set_fact:
@@ -59,7 +59,8 @@
 - name: unpack images
   command:
     chdir: "{{ targetDir }}/images"
-    cmd: "p7zip -d -f -k {{ item | basename }}"
+    cmd: "xz    -d -f -k {{ item | basename }}"
+    # cmd: "p7zip -d -f -k {{ item | basename }}"
     creates: "{{ targetDir }}/images/{{ item | basename }}.img"
   loop: "{{ images }}"
 

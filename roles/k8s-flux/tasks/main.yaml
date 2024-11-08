@@ -1,0 +1,15 @@
+# Install Flux to cluster
+---
+- name: Install home-k8s flux
+  # export GITHUB_TOKEN=<gh-token>
+  shell: >-
+    flux bootstrap github \
+      --token-auth \
+      --owner=Bengreen \
+      --repository=home-k8s \
+      --branch=main \
+      --path=clusters/kubernetes \
+      --personal
+  environment:
+    GITHUB_TOKEN: "{{ lookup('env','GITHUB_TOKEN') }}"
+    KUBECONFIG: /etc/kubernetes/admin.conf

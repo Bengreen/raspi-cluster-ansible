@@ -1,6 +1,7 @@
 ---
 - hosts: k8s
   vars: []
+    # kubeAdmReset: True
   roles:
   - k8s-dependencies
   - hostname
@@ -25,6 +26,7 @@
   roles:
   - k8s-utils
   - k8s-user
-- hosts: k8smaster
-  roles: []
+# - hosts: k8smaster
+#   roles:
+#   - k8s-flux
   # - k8s-operators
