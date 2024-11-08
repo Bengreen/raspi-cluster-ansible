@@ -22,6 +22,9 @@ all:
         - ip: 192.168.1.1
           names:
           - netman
+        - ip: 192.168.199.1
+          names:
+          - sheppie
     dadspi:
       ip: 192.168.1.32
     samspi:
@@ -35,7 +38,7 @@ all:
       vars:
         ansible_user: ansible
         ansible_become: yes
-        kubernetes_version: "1.28.4-1.1"
+        kubernetes_version: "1.28.8-1.1"
       hosts:
         k8s100.k8s:
           # ARM

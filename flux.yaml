@@ -1,0 +1,5 @@
+---
+- hosts: k8smaster
+  roles:
+  - k8s-flux
+  # - k8s-operators
