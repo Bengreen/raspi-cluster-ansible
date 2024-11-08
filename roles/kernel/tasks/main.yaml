@@ -6,3 +6,9 @@
   community.general.modprobe:
     name: configs
     state: present
+
+# Extract the kernel config using zcat
+- name: Extract the kernel config
+  shell: zcat /proc/config.gz > /boot/config-custom
+  args:
+      creates: /boot/config-custom
