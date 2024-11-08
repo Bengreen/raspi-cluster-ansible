@@ -1,0 +1,5 @@
+---
+KERNEL_suffix: "-v8-pg48"
+BOOT_DIR: /custom_boot
+MODULES_DIR: /custom_modules
+BUILD_DIR: /usr/src/linux
