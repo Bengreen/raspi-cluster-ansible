@@ -1,0 +1,8 @@
+---
+- debug:
+    msg: kernel install
+
+- name: Add the kernel config module
+  community.general.modprobe:
+    name: configs
+    state: present
