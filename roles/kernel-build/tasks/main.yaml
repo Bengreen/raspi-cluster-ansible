@@ -102,41 +102,59 @@
 
 
 
-- name: Install built kernel
-  block:
-    # create directory /usr/src/linux
-    - name: Create dirs
-      file:
-        path: "{{ item }}"
-        state: directory
-      loop:
-        - "{{ BOOT_DIR }}"
-        - "{{ BOOT_DIR }}/firmware"
-        - "{{ BOOT_DIR }}/firmware/overlays"
-        - "{{ MODULES_DIR }}"
+# create directory /usr/src/linux
+- name: Create dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ BOOT_DIR }}"
+    - "{{ MODULES_DIR }}"
 
-    - name: Copy kernel
-      copy:
-        src: "{{ BUILD_DIR }}/arch/arm64/boot/Image.gz"
-        dest: "{{ BOOT_DIR }}/kernel{{ KERNEL_suffix }}"
+- name: Copy kernel
+  copy:
+    src: "{{ BUILD_DIR }}/arch/arm64/boot/Image.gz"
+    dest: "{{ BOOT_DIR }}/kernel{{ KERNEL_suffix }}"
 
-    - name: Copy dtb files to firmware
-      copy:
-        src: "{{ item }}"
-        dest: "{{ BOOT_DIR }}/firmware/"
-      with_fileglob:
-        - "{{ BUILD_DIR }}/arch/arm64/boot/dts/broadcom/*.dtb"
+- name: Copy dtb files to boot
+  copy:
+    src: "{{ item }}"
+    dest: "{{ BOOT_DIR }}/firmware/"
+  with_fileglob:
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/broadcom/*.dtb"
 
-    - name: Copy dtb files to firmware/overlays
-      copy:
-        src: "{{ item }}"
-        dest: /{{ BOOT_DIR }}/firmware/overlays/
-      with_fileglob:
-        - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/*.dtb"
-        - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/README"
-          # sudo cp arch/arm64/boot/dts/overlays/*.dtb* /boot/firmware/overlays/
+- name: Copy dtb* files to overlays
+  copy:
+    src: "{{ item }}"
+    dest: /{{ BOOT_DIR }}/firmware/overlays/
+  with_fileglob:
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/*.dtb*"
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/README"
+      # sudo cp arch/arm64/boot/dts/overlays/*.dtb* /boot/firmware/overlays/
 
-    - name: make the kernel
-      command: make modules_install INSTALL_MOD_PATH={{ MODULES_DIR }}
-      args:
-        chdir: "{{ BUILD_DIR }}"
+- name: make and install the modules
+  command: make -j6 modules_install INSTALL_MOD_PATH={{ MODULES_DIR }}
+  args:
+    chdir: "{{ BUILD_DIR }}"
+    creates: "{{ MODULES_DIR }}/lib/modules/6.1.93-v8-pg48+"
+
+- name: Compress MODULES_DIR/lib to tgz
+  community.general.archive:
+    path: /{{ MODULES_DIR }}/lib
+    dest: /{{ MODULES_DIR }}/modules{{ KERNEL_suffix }}.tgz
+
+- name: config.txt sd
+  template:
+    src: config.j2
+    dest: /{{ BOOT_DIR }}/config.txt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: cmdline_sd
+  template:
+    src: cmdline_sd.j2
+    dest: /{{ BOOT_DIR }}/cmdline_sd.txt
+    owner: root
+    group: root
+    mode: 0644

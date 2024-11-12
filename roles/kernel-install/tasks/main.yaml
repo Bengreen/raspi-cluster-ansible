@@ -1,0 +1,6 @@
+# Install kernel from pre-build image and modules and firmware
+---
+- name: Unarchive modules
+  unarchive:
+    src:  "{{ MODULES_DIR }}/modules{{ KERNEL_suffix }}.tgz"
+    dest: /

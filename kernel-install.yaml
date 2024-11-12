@@ -1,13 +1,10 @@
 ---
-- hosts: gateway
+- hosts: rpinodes
   vars:
     ansible_user: ansible
     ansible_become: yes
     vlan_interface: eth0
     vlan_tag: "3"
-    nfs_exports:
-      - /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
-      - /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
     dnshosts:
       dockerreg: 192.168.2.1
       weave: 192.168.2.240
@@ -18,8 +15,7 @@
       kiali: 192.168.2.240
       pgadmin: 192.168.2.240
   roles:
-    - kernel-build
-    # - kernel-install
+    - kernel-install
     # - clusterctrl
     # - pyfan
     # - gw-lan
