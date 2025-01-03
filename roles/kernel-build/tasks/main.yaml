@@ -40,12 +40,6 @@
       - libssl-dev
       - make
 
-# # copy the kernel config to /usr/src/linux
-# - name: Copy the kernel config
-#   copy:
-#     src: /boot/config-custom
-#     dest: /usr/src/linux/.config
-
 # make the kernel
 - name: Get config for the kernel
   command: make bcm2711_defconfig
