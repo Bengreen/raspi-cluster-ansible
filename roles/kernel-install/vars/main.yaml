@@ -1,0 +1,5 @@
+---
+KERNEL_suffix: "-v8-pg48"
+# BOOT_DIR: /custom_boot
+MODULES_DIR: /custom_modules
+# TARGET_BOOT_DIR: /boot

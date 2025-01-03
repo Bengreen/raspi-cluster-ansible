@@ -1,0 +1,31 @@
+---
+- hosts: rpinodes
+  vars:
+    ansible_user: ansible
+    ansible_become: yes
+    vlan_interface: eth0
+    vlan_tag: "3"
+    dnshosts:
+      dockerreg: 192.168.2.1
+      weave: 192.168.2.240
+      minio: 192.168.2.240
+      longhorn: 192.168.2.240
+      prometheus: 192.168.2.240
+      grafana: 192.168.2.240
+      kiali: 192.168.2.240
+      pgadmin: 192.168.2.240
+  roles:
+    - kernel-install
+    # - clusterctrl
+    # - pyfan
+    # - gw-lan
+    # - dnsmasq
+    # - router
+    # - initrd
+    # - dietpiclient
+    # - gatewayserver
+    # - docker
+    # - docker-registry
+    # # - firmware
+    # - role: k8s-utils
+    #   tags: k8s

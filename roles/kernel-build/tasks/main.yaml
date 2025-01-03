@@ -1,0 +1,154 @@
+# https://www.raspberrypi.com/documentation/computers/linux_kernel.html
+---
+- name: Add the kernel config module
+  community.general.modprobe:
+    name: configs
+    state: present
+
+# # Extract the kernel config using zcat
+# - name: Extract the kernel config
+#   shell: zcat /proc/config.gz > /boot/config-custom
+#   args:
+#     creates: /boot/config-custom
+
+
+# create directory /usr/src/linux
+- name: Create {{ BUILD_DIR }}
+  file:
+    path: "{{ BUILD_DIR }}"
+    state: directory
+
+# git clone the kernel source to /usr/src/linux
+- name: Clone the kernel source
+  git:
+    repo: https://github.com/raspberrypi/linux
+    dest: "{{ BUILD_DIR }}"
+    version: rpi-6.1.y
+    depth: 1
+    update: false
+
+- name: Install build packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - bc
+      - bison
+      - flex
+      - libssl-dev
+      - make
+
+# make the kernel
+- name: Get config for the kernel
+  command: make bcm2711_defconfig
+  args:
+    chdir: "{{ BUILD_DIR }}"
+    creates: "{{ BUILD_DIR }}/.config"
+  environment:
+    KERNEL: kernel8
+
+# edit the kernel config to enable the required options
+- name: Unset CONFIG_ARM64_VA_BITS_39
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_ARM64_VA_BITS_39'
+    line: "# CONFIG_ARM64_VA_BITS_39 is not set"
+
+- name: Set CONFIG_ARM64_VA_BITS_48
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_ARM64_VA_BITS_48='
+    line: CONFIG_ARM64_VA_BITS_48=y
+
+- name: Set CONFIG_ARM64_VA_BITS
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_ARM64_VA_BITS='
+    line: CONFIG_ARM64_VA_BITS=48
+
+- name: Set CONFIG_PGTABLE_LEVELS
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_PGTABLE_LEVELS='
+    line: CONFIG_PGTABLE_LEVELS=4
+
+- name: Set CONFIG_ARCH_MMAP_RND_BITS_MAX
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_ARCH_MMAP_RND_BITS_MAX='
+    line: CONFIG_ARCH_MMAP_RND_BITS_MAX=33
+
+
+- name: Set CONFIG_LOCALVERSION
+  lineinfile:
+    path: "{{ BUILD_DIR }}/.config"
+    regexp: '^CONFIG_LOCALVERSION'
+    line: CONFIG_LOCALVERSION="{{ KERNEL_suffix }}"
+
+- name: make the kernel
+  command: make -j6 Image.gz modules dtbs
+  args:
+    chdir: "{{ BUILD_DIR }}"
+  environment:
+    KERNEL: kernel8
+
+
+
+# create directory /usr/src/linux
+- name: Create dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ BOOT_DIR }}"
+    - "{{ MODULES_DIR }}"
+
+- name: Copy kernel
+  copy:
+    src: "{{ BUILD_DIR }}/arch/arm64/boot/Image.gz"
+    dest: "{{ BOOT_DIR }}/kernel{{ KERNEL_suffix }}"
+
+- name: Copy dtb files to boot
+  copy:
+    src: "{{ item }}"
+    dest: "{{ BOOT_DIR }}/firmware/"
+  with_fileglob:
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/broadcom/*.dtb"
+
+- name: Copy dtb* files to overlays
+  copy:
+    src: "{{ item }}"
+    dest: /{{ BOOT_DIR }}/firmware/overlays/
+  with_fileglob:
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/*.dtb*"
+    - "{{ BUILD_DIR }}/arch/arm64/boot/dts/overlays/README"
+      # sudo cp arch/arm64/boot/dts/overlays/*.dtb* /boot/firmware/overlays/
+
+- name: make and install the modules
+  command: make -j6 modules_install INSTALL_MOD_PATH={{ MODULES_DIR }}
+  args:
+    chdir: "{{ BUILD_DIR }}"
+    creates: "{{ MODULES_DIR }}/lib/modules/6.1.93-v8-pg48+"
+
+- name: Compress MODULES_DIR/lib to tgz
+  community.general.archive:
+    path: /{{ MODULES_DIR }}/lib
+    dest: /{{ MODULES_DIR }}/modules{{ KERNEL_suffix }}.tgz
+
+- name: config.txt sd
+  template:
+    src: config.j2
+    dest: /{{ BOOT_DIR }}/config.txt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: cmdline_sd
+  template:
+    src: cmdline_sd.j2
+    dest: /{{ BOOT_DIR }}/cmdline_sd.txt
+    owner: root
+    group: root
+    mode: 0644
