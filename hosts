@@ -38,7 +38,7 @@ all:
       vars:
         ansible_user: ansible
         ansible_become: yes
-        kubernetes_version: "1.28.8-1.1"
+        kubernetes_version: "1.31.4-1.1"
       hosts:
         k8s100.k8s:
           # ARM
@@ -68,6 +68,10 @@ all:
           # x86
           ip: 192.168.2.105
           mac: 00:23:24:ad:d4:b4
+        k8s106.k8s:
+          # x86
+          ip: 192.168.2.106
+          mac: 98:fa:9b:8a:06:4f
       children:
         rpinodes:
           hosts:
@@ -85,6 +89,7 @@ all:
             k8s103.k8s:
             k8s104.k8s:
             k8s105.k8s:
+            k8s106.k8s:
     gateway:
       hosts:
         192.168.1.100:
