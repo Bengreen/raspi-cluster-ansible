@@ -90,6 +90,7 @@ all:
             k8s104.k8s:
             k8s105.k8s:
             k8s106.k8s:
+            k8s107.k8s:
     gateway:
       hosts:
         192.168.1.100:
