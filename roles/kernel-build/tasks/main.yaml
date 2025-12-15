@@ -23,7 +23,7 @@
   git:
     repo: https://github.com/raspberrypi/linux
     dest: "{{ BUILD_DIR }}"
-    version: rpi-6.1.y
+    version: rpi-6.12.y
     depth: 1
     update: false
 
