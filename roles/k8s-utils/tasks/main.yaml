@@ -21,7 +21,7 @@
 
 - name: Install Helm
   unarchive:
-    src: https://get.helm.sh/helm-v3.16.2-linux-arm.tar.gz
+    src: https://get.helm.sh/helm-v3.19.0-linux-arm.tar.gz
     dest: /opt/helm/
     remote_src: yes
     creates: /opt/helm/linux-arm/helm

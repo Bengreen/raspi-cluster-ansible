@@ -1,6 +1,6 @@
 ---
 - hosts: k8s
-  vars: []
+  vars: {}
     # kubeAdmReset: True
   roles:
   - k8s-dependencies
